@@ -10,4 +10,15 @@ plugins:
   scorecard.sdk.operatorframework.io/v2: {}
 projectName: openloft
 repo: github.com/openloft/openloft
+resources:
+- controller: true
+  domain: loft.sh
+  group: storage
+  kind: VirtualClusterInstance
+  version: v1
+- controller: true
+  domain: loft.sh
+  group: storage
+  kind: VirtualClusterTemplate
+  version: v1
 version: "3"
