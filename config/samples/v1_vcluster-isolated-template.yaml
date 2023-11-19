@@ -1,0 +1,38 @@
+apiVersion: storage.loft.sh/v1
+kind: VirtualClusterTemplate
+metadata:
+  name: vcluster-isolated-template
+spec:
+  access:
+    - users:
+        - "*"
+      verbs:
+        - get
+  description: This virtual cluster template deploys an isolated vcluster
+  displayName: Virtual Cluster Template (Isolated)
+  template:
+    accessPoint:
+      ingress: {}
+    helmRelease:
+      chart: {}
+      values: |-
+        # Below you can configure the virtual cluster
+        isolation:
+          enabled: true
+          networkPolicy:
+            enabled: false
+
+        sync:
+          ingresses:
+            enabled: true
+
+        coredns:
+          enabled: true
+          integrated: false
+
+        # Checkout https://vcluster.com/pro/docs/ for more config options
+    instanceTemplate:
+      metadata: {}
+    metadata: {}
+    spaceTemplate:
+      metadata: {}

@@ -1,0 +1,7 @@
+apiVersion: storage.loft.sh/v1
+kind: VirtualClusterInstance
+metadata:
+  name: sample
+spec:
+  templateRef:
+    name: vcluster-isolated-template
