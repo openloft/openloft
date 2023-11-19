@@ -1,4 +1,7 @@
-# openloft
+# OpenLoft
+
+[![Makefile CI](https://github.com/openloft/openloft/actions/workflows/makefile.yml/badge.svg)](https://github.com/openloft/openloft/actions/workflows/makefile.yml)
+
 // TODO(user): Add simple overview of use/purpose
 
 ## Description
