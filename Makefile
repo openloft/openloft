@@ -1,3 +1,10 @@
+DOCKER ?= docker
+ifeq ($(shell uname),Darwin)
+	SED := $(DOCKER) run -i --rm -v "$(PWD):$(PWD)" -w "$(PWD)" alpine:latest sed
+else
+	SED := sed
+endif
+
 # VERSION defines the project version for the bundle.
 # Update this value when you upgrade the version of your project.
 # To re-generate a bundle for another specific version without changing the standard setup, you can:
@@ -51,7 +58,7 @@ endif
 OPERATOR_SDK_VERSION ?= v1.32.0
 
 # Image URL to use all building/pushing image targets
-IMG ?= controller:latest
+IMG ?= ghcr.io/openloft/openloft:latest
 # ENVTEST_K8S_VERSION refers to the version of kubebuilder assets to be downloaded by envtest binary.
 ENVTEST_K8S_VERSION = 1.26.0
 
@@ -95,7 +102,7 @@ manifests: SED_REPLACE_STRING := scope: Cluster
 manifests: controller-gen ## Generate WebhookConfiguration, ClusterRole and CustomResourceDefinition objects.
 	$(CONTROLLER_GEN) rbac:roleName=manager-role crd webhook paths="./vendor/github.com/loft-sh/api/v3/pkg/apis/storage/v1/;./controllers/..." output:crd:artifacts:config=config/crd/bases
 	grep -l -RE "$(SED_SEARCH_STRING)" config/crd/bases \
-		| xargs sed -i '' -E 's#$(SED_SEARCH_STRING)$$#$(SED_REPLACE_STRING)#g'
+		| xargs $(SED) -i -E 's#$(SED_SEARCH_STRING)$$#$(SED_REPLACE_STRING)#g'
 
 .PHONY: generate
 generate: controller-gen ## Generate code containing DeepCopy, DeepCopyInto, and DeepCopyObject method implementations.
