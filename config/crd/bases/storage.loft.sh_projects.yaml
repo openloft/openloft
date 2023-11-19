@@ -1,0 +1,515 @@
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.11.1
+  creationTimestamp: null
+  name: projects.storage.loft.sh
+spec:
+  group: storage.loft.sh
+  names:
+    kind: Project
+    listKind: ProjectList
+    plural: projects
+    singular: project
+  scope: Cluster
+  versions:
+  - name: v1
+    schema:
+      openAPIV3Schema:
+        description: Project
+        properties:
+          apiVersion:
+            description: 'APIVersion defines the versioned schema of this representation
+              of an object. Servers should convert recognized schemas to the latest
+              internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+            type: string
+          kind:
+            description: 'Kind is a string value representing the REST resource this
+              object represents. Servers may infer this from the endpoint the client
+              submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+            type: string
+          metadata:
+            type: object
+          spec:
+            properties:
+              access:
+                description: Access holds the access rights for users and teams
+                items:
+                  description: Access describes the access to a secret
+                  properties:
+                    name:
+                      description: Name is an optional name that is used for this
+                        access rule
+                      type: string
+                    subresources:
+                      description: Subresources defines the sub resources that are
+                        allowed by this access rule
+                      items:
+                        type: string
+                      type: array
+                    teams:
+                      description: Teams specifies which teams should be able to access
+                        this secret with the aforementioned verbs
+                      items:
+                        type: string
+                      type: array
+                    users:
+                      description: Users specifies which users should be able to access
+                        this secret with the aforementioned verbs
+                      items:
+                        type: string
+                      type: array
+                    verbs:
+                      description: Verbs is a list of Verbs that apply to ALL the
+                        ResourceKinds and AttributeRestrictions contained in this
+                        rule. VerbAll represents all kinds.
+                      items:
+                        type: string
+                      type: array
+                  required:
+                  - verbs
+                  type: object
+                type: array
+              allowedClusters:
+                description: AllowedClusters are target clusters that are allowed
+                  to target with environments.
+                items:
+                  properties:
+                    name:
+                      description: Name is the name of the cluster that is allowed
+                        to create an environment in.
+                      type: string
+                  type: object
+                type: array
+              allowedRunners:
+                description: AllowedRunners are target runners that are allowed to
+                  target with DevPod environments.
+                items:
+                  properties:
+                    name:
+                      description: Name is the name of the runner that is allowed
+                        to create an environment in.
+                      type: string
+                  type: object
+                type: array
+              allowedTemplates:
+                description: AllowedTemplates are the templates that are allowed to
+                  use in this project.
+                items:
+                  properties:
+                    group:
+                      description: Group of the template that is allowed. Currently
+                        only supports storage.loft.sh
+                      type: string
+                    isDefault:
+                      description: IsDefault specifies if the template should be used
+                        as a default
+                      type: boolean
+                    kind:
+                      description: Kind of the template that is allowed. Currently
+                        only supports DevPodWorkspaceTemplate, VirtualClusterTemplate
+                        & SpaceTemplate
+                      type: string
+                    name:
+                      description: Name of the template
+                      type: string
+                  type: object
+                type: array
+              argoCD:
+                description: ArgoIntegration holds information about ArgoCD Integration
+                properties:
+                  cluster:
+                    description: Cluster defines the name of the cluster that ArgoCD
+                      is deployed into -- if not provided this will default to 'loft-cluster'.
+                    type: string
+                  enabled:
+                    description: Enabled indicates if the ArgoCD Integration is enabled
+                      for the project -- this knob only enables the syncing of virtualclusters,
+                      but does not enable SSO integration or project creation (see
+                      subsequent spec sections!).
+                    type: boolean
+                  namespace:
+                    description: Namespace defines the namespace in which ArgoCD is
+                      running in the cluster.
+                    type: string
+                  project:
+                    description: Project defines project related values for the ArgoCD
+                      Integration. Enabling Project integration will cause Loft to
+                      generate and manage an ArgoCD appProject that corresponds to
+                      the Loft Project.
+                    properties:
+                      enabled:
+                        description: Enabled indicates if the ArgoCD Project Integration
+                          is enabled for this project. Enabling this will cause Loft
+                          to create an appProject in ArgoCD that is associated with
+                          the Loft Project. When Project integration is enabled Loft
+                          will override the default assigned role set in the SSO integration
+                          spec.
+                        type: boolean
+                      metadata:
+                        description: Metadata defines additional metadata to attach
+                          to the loft created project in ArgoCD.
+                        properties:
+                          description:
+                            description: Description to add to the ArgoCD project.
+                            type: string
+                          extraAnnotations:
+                            additionalProperties:
+                              type: string
+                            description: ExtraAnnotations are optional annotations
+                              that can be attached to the project in ArgoCD.
+                            type: object
+                          extraLabels:
+                            additionalProperties:
+                              type: string
+                            description: ExtraLabels are optional labels that can
+                              be attached to the project in ArgoCD.
+                            type: object
+                        type: object
+                      roles:
+                        description: Roles is a list of roles that should be attached
+                          to the ArgoCD project. If roles are provided no loft default
+                          roles will be set. If no roles are provided *and* SSO is
+                          enabled, loft will configure sane default values.
+                        items:
+                          properties:
+                            description:
+                              description: Description to add to the ArgoCD project.
+                              type: string
+                            groups:
+                              description: Groups is a list of OIDC group names to
+                                bind to the role.
+                              items:
+                                type: string
+                              type: array
+                            name:
+                              description: Name of the ArgoCD role to attach to the
+                                project.
+                              type: string
+                            rules:
+                              description: Rules ist a list of policy rules to attach
+                                to the role.
+                              items:
+                                properties:
+                                  action:
+                                    description: Action is one of "*", "get", "create",
+                                      "update", "delete", "sync", or "override".
+                                    type: string
+                                  application:
+                                    description: Application is the ArgoCD project/repository
+                                      to apply the rule to.
+                                    type: string
+                                  permission:
+                                    description: Allow applies the "allow" permission
+                                      to the rule, if allow is not set, the permission
+                                      will always be set to "deny".
+                                    type: boolean
+                                type: object
+                              type: array
+                          type: object
+                        type: array
+                      sourceRepos:
+                        description: SourceRepos is a list of source repositories
+                          to attach/allow on the project, if not specified will be
+                          "*" indicating all source repositories.
+                        items:
+                          type: string
+                        type: array
+                    type: object
+                  sso:
+                    description: SSO defines single-sign-on related values for the
+                      ArgoCD Integration. Enabling SSO will allow users to authenticate
+                      to ArgoCD via Loft.
+                    properties:
+                      assignedRoles:
+                        description: AssignedRoles is a list of roles to assign for
+                          users who authenticate via Loft -- by default this will
+                          be the `read-only` role. If any roles are provided this
+                          will override the default setting.
+                        items:
+                          type: string
+                        type: array
+                      enabled:
+                        description: Enabled indicates if the ArgoCD SSO Integration
+                          is enabled for this project. Enabling this will cause Loft
+                          to configure SSO authentication via Loft in ArgoCD. If Projects
+                          are *not* enabled, all users associated with this Project
+                          will be assigned either the 'read-only' (default) role,
+                          *or* the roles set under the AssignedRoles field.
+                        type: boolean
+                      host:
+                        description: Host defines the ArgoCD host address that will
+                          be used for OIDC authentication between loft and ArgoCD.
+                          If not specified OIDC integration will be skipped, but vclusters/spaces
+                          will still be synced to ArgoCD.
+                        type: string
+                    type: object
+                  virtualClusterInstance:
+                    description: VirtualClusterInstance defines the name of *virtual
+                      cluster* (instance) that ArgoCD is deployed into. If provided,
+                      Cluster will be ignored and Loft will assume that ArgoCD is
+                      running in the specified virtual cluster.
+                    type: string
+                type: object
+              description:
+                description: Description describes an app
+                type: string
+              displayName:
+                description: DisplayName is the name that should be displayed in the
+                  UI
+                type: string
+              members:
+                description: Members are the users and teams that are part of this
+                  project
+                items:
+                  properties:
+                    clusterRole:
+                      description: ClusterRole is the assigned role for the above
+                        member
+                      type: string
+                    group:
+                      description: Group of the member. Currently only supports storage.loft.sh
+                      type: string
+                    kind:
+                      description: Kind is the kind of the member. Currently either
+                        User or Team
+                      type: string
+                    name:
+                      description: Name of the member
+                      type: string
+                  type: object
+                type: array
+              namespacePattern:
+                description: NamespacePattern specifies template patterns to use for
+                  creating each space or virtual cluster's namespace
+                properties:
+                  space:
+                    description: Space holds the namespace pattern to use for space
+                      instances
+                    type: string
+                  virtualCluster:
+                    description: VirtualCluster holds the namespace pattern to use
+                      for virtual cluster instances
+                    type: string
+                type: object
+              owner:
+                description: Owner holds the owner of this object
+                properties:
+                  team:
+                    description: Team specifies a Loft team.
+                    type: string
+                  user:
+                    description: User specifies a Loft user.
+                    type: string
+                type: object
+              quotas:
+                description: Quotas define the quotas inside the project
+                properties:
+                  project:
+                    additionalProperties:
+                      type: string
+                    description: Project holds the quotas for the whole project
+                    type: object
+                  user:
+                    additionalProperties:
+                      type: string
+                    description: User holds the quotas per user / team
+                    type: object
+                type: object
+              vault:
+                description: VaultIntegration holds information about Vault Integration
+                properties:
+                  address:
+                    description: Address defines the address of the Vault instance
+                      to use for this project. Will default to the `VAULT_ADDR` environment
+                      variable if not provided.
+                    type: string
+                  auth:
+                    description: Auth defines the authentication method to use for
+                      this project.
+                    properties:
+                      token:
+                        description: Token defines the token to use for authentication.
+                        type: string
+                      tokenSecretRef:
+                        description: "TokenSecretRef defines the Kubernetes secret
+                          to use for token authentication. Will be used if `token`
+                          is not provided. \n Secret data should contain the `token`
+                          key."
+                        properties:
+                          key:
+                            description: The key of the secret to select from.  Must
+                              be a valid secret key.
+                            type: string
+                          name:
+                            description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                              TODO: Add other useful fields. apiVersion, kind, uid?'
+                            type: string
+                          optional:
+                            description: Specify whether the Secret or its key must
+                              be defined
+                            type: boolean
+                        required:
+                        - key
+                        type: object
+                        x-kubernetes-map-type: atomic
+                    type: object
+                  enabled:
+                    description: Enabled indicates if the Vault Integration is enabled
+                      for the project -- this knob only enables the syncing of secrets
+                      to or from Vault, but does not setup Kubernetes authentication
+                      methods or Kubernetes secrets engines for vclusters.
+                    type: boolean
+                  namespace:
+                    description: Namespace defines the namespace to use when storing
+                      secrets in Vault.
+                    type: string
+                  skipTLSVerify:
+                    description: SkipTLSVerify defines if TLS verification should
+                      be skipped when connecting to Vault.
+                    type: boolean
+                  syncInterval:
+                    description: SyncInterval defines the interval at which to sync
+                      secrets from Vault. Defaults to `1m.` See https://pkg.go.dev/time#ParseDuration
+                      for supported formats.
+                    type: string
+                type: object
+            type: object
+          status:
+            properties:
+              conditions:
+                description: Conditions holds several conditions the project might
+                  be in
+                items:
+                  description: Condition defines an observation of a Cluster API resource
+                    operational state.
+                  properties:
+                    lastTransitionTime:
+                      description: Last time the condition transitioned from one status
+                        to another. This should be when the underlying condition changed.
+                        If that is not known, then using the time when the API field
+                        changed is acceptable.
+                      format: date-time
+                      type: string
+                    message:
+                      description: A human readable message indicating details about
+                        the transition. This field may be empty.
+                      type: string
+                    reason:
+                      description: The reason for the condition's last transition
+                        in CamelCase. The specific API may choose whether this field
+                        is considered a guaranteed API. This field may not be empty.
+                      type: string
+                    severity:
+                      description: Severity provides an explicit classification of
+                        Reason code, so the users or machines can immediately understand
+                        the current situation and act accordingly. The Severity field
+                        MUST be set only when Status=False.
+                      type: string
+                    status:
+                      description: Status of the condition, one of True, False, Unknown.
+                      type: string
+                    type:
+                      description: Type of condition in CamelCase or in foo.example.com/CamelCase.
+                        Many .condition.type values are consistent across resources
+                        like Available, but because arbitrary conditions can be useful
+                        (see .node.status.conditions), the ability to deconflict is
+                        important.
+                      type: string
+                  required:
+                  - status
+                  - type
+                  type: object
+                type: array
+              quotas:
+                description: Quotas holds the quota status
+                properties:
+                  project:
+                    description: Project is the quota status for the whole project
+                    properties:
+                      clusters:
+                        additionalProperties:
+                          properties:
+                            used:
+                              additionalProperties:
+                                type: string
+                              description: Used is the amount currently used. Maps
+                                resource name, such as pods, to their used amount.
+                              type: object
+                          type: object
+                        description: Clusters holds the used amount per cluster. Maps
+                          cluster name to used resources
+                        type: object
+                      limit:
+                        additionalProperties:
+                          type: string
+                        description: Limit is the amount limited, copied from spec.quotas.project
+                        type: object
+                      used:
+                        additionalProperties:
+                          type: string
+                        description: Used is the amount currently used across all
+                          clusters
+                        type: object
+                    type: object
+                  user:
+                    description: 'User is the quota status for each user / team. An
+                      example status could look like this: status: quotas: user: limit:
+                      pods: "10" spaces: "5" users: admin: used: spaces: "3"  # <-
+                      calculated in our apiserver pods: "8"    # <- the sum calculated
+                      from clusters clusters: cluster-1:  # <- populated by agent
+                      from cluster-1 users: admin: pods: "3" cluster-2: users: admin:
+                      pods: "5"'
+                    properties:
+                      clusters:
+                        additionalProperties:
+                          properties:
+                            teams:
+                              additionalProperties:
+                                additionalProperties:
+                                  type: string
+                                type: object
+                              description: Teams is a mapping of teams to used resources
+                              type: object
+                            users:
+                              additionalProperties:
+                                additionalProperties:
+                                  type: string
+                                type: object
+                              description: Users is a mapping of users to used resources
+                              type: object
+                          type: object
+                        description: Clusters holds the used amount per cluster. Maps
+                          cluster name to used resources
+                        type: object
+                      limit:
+                        additionalProperties:
+                          type: string
+                        description: Limit is the amount limited per user / team
+                        type: object
+                      used:
+                        description: Used is the used amount per user / team
+                        properties:
+                          teams:
+                            additionalProperties:
+                              additionalProperties:
+                                type: string
+                              type: object
+                            description: Teams is a mapping of teams to used resources
+                            type: object
+                          users:
+                            additionalProperties:
+                              additionalProperties:
+                                type: string
+                              type: object
+                            description: Users is a mapping of users to used resources
+                            type: object
+                        type: object
+                    type: object
+                type: object
+            type: object
+        type: object
+    served: true
+    storage: true

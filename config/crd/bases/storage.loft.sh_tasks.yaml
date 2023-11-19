@@ -1,0 +1,905 @@
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.11.1
+  creationTimestamp: null
+  name: tasks.storage.loft.sh
+spec:
+  group: storage.loft.sh
+  names:
+    kind: Task
+    listKind: TaskList
+    plural: tasks
+    singular: task
+  scope: Cluster
+  versions:
+  - name: v1
+    schema:
+      openAPIV3Schema:
+        properties:
+          apiVersion:
+            description: 'APIVersion defines the versioned schema of this representation
+              of an object. Servers should convert recognized schemas to the latest
+              internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+            type: string
+          kind:
+            description: 'Kind is a string value representing the REST resource this
+              object represents. Servers may infer this from the endpoint the client
+              submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+            type: string
+          metadata:
+            type: object
+          spec:
+            properties:
+              access:
+                description: Access holds the access rights for users and teams
+                items:
+                  description: Access describes the access to a secret
+                  properties:
+                    name:
+                      description: Name is an optional name that is used for this
+                        access rule
+                      type: string
+                    subresources:
+                      description: Subresources defines the sub resources that are
+                        allowed by this access rule
+                      items:
+                        type: string
+                      type: array
+                    teams:
+                      description: Teams specifies which teams should be able to access
+                        this secret with the aforementioned verbs
+                      items:
+                        type: string
+                      type: array
+                    users:
+                      description: Users specifies which users should be able to access
+                        this secret with the aforementioned verbs
+                      items:
+                        type: string
+                      type: array
+                    verbs:
+                      description: Verbs is a list of Verbs that apply to ALL the
+                        ResourceKinds and AttributeRestrictions contained in this
+                        rule. VerbAll represents all kinds.
+                      items:
+                        type: string
+                      type: array
+                  required:
+                  - verbs
+                  type: object
+                type: array
+              displayName:
+                description: DisplayName is the name that should be displayed in the
+                  UI
+                type: string
+              owner:
+                description: Owner holds the owner of this object
+                properties:
+                  team:
+                    description: Team specifies a Loft team.
+                    type: string
+                  user:
+                    description: User specifies a Loft user.
+                    type: string
+                type: object
+              scope:
+                description: Scope defines the scope of the access key.
+                properties:
+                  allowLoftCli:
+                    description: AllowLoftCLI allows certain read-only management
+                      requests to make sure loft cli works correctly with this specific
+                      access key.
+                    type: boolean
+                  projects:
+                    description: Projects specifies the projects the access key should
+                      have access to.
+                    items:
+                      properties:
+                        project:
+                          description: Project is the name of the project. You can
+                            specify * to select all projects.
+                          type: string
+                      type: object
+                    type: array
+                  rules:
+                    description: 'DEPRECATED: Use Projects, Spaces and VirtualClusters
+                      instead Rules specifies the rules that should apply to the access
+                      key.'
+                    items:
+                      description: AccessKeyScopeRule describes a rule for the access
+                        key
+                      properties:
+                        cluster:
+                          description: Cluster that this rule matches. Only applies
+                            to cluster requests. If this is set, no requests for non
+                            cluster requests are allowed. An empty cluster means no
+                            restrictions will apply.
+                          type: string
+                        namespaces:
+                          description: Namespaces that this rule matches. The empty
+                            string "" matches non-namespaced resources. An empty list
+                            implies every namespace.
+                          items:
+                            type: string
+                          type: array
+                        nonResourceURLs:
+                          description: 'NonResourceURLs is a set of URL paths that
+                            should be checked. *s are allowed, but only as the full,
+                            final step in the path. Examples: "/metrics" - Log requests
+                            for apiserver metrics "/healthz*" - Log all health checks'
+                          items:
+                            type: string
+                          type: array
+                        requestTargets:
+                          description: RequestTargets is a list of request targets
+                            that are allowed. An empty list implies every request.
+                          items:
+                            description: RequestTarget defines the target of an incoming
+                              request
+                            type: string
+                          type: array
+                        resources:
+                          description: Resources that this rule matches. An empty
+                            list implies all kinds in all API groups.
+                          items:
+                            description: GroupResources represents resource kinds
+                              in an API group.
+                            properties:
+                              group:
+                                description: Group is the name of the API group that
+                                  contains the resources. The empty string represents
+                                  the core API group.
+                                type: string
+                              resourceNames:
+                                description: ResourceNames is a list of resource instance
+                                  names that the policy matches. Using this field
+                                  requires Resources to be specified. An empty list
+                                  implies that every instance of the resource is matched.
+                                items:
+                                  type: string
+                                type: array
+                              resources:
+                                description: "Resources is a list of resources this
+                                  rule applies to. \n For example: 'pods' matches
+                                  pods. 'pods/log' matches the log subresource of
+                                  pods. '*' matches all resources and their subresources.
+                                  'pods/*' matches all subresources of pods. '*/scale'
+                                  matches all scale subresources. \n If wildcard is
+                                  present, the validation rule will ensure resources
+                                  do not overlap with each other. \n An empty list
+                                  implies all resources and subresources in this API
+                                  groups apply."
+                                items:
+                                  type: string
+                                type: array
+                            type: object
+                          type: array
+                        verbs:
+                          description: The verbs that match this rule. An empty list
+                            implies every verb.
+                          items:
+                            type: string
+                          type: array
+                        virtualClusters:
+                          description: VirtualClusters that this rule matches. Only
+                            applies to virtual cluster requests. An empty list means
+                            no restrictions will apply.
+                          items:
+                            properties:
+                              name:
+                                description: Name of the virtual cluster. Empty means
+                                  all virtual clusters.
+                                type: string
+                              namespace:
+                                description: Namespace of the virtual cluster. Empty
+                                  means all namespaces.
+                                type: string
+                            type: object
+                          type: array
+                      type: object
+                    type: array
+                  spaces:
+                    description: Spaces specifies the spaces the access key is allowed
+                      to access.
+                    items:
+                      properties:
+                        project:
+                          description: Project is the name of the project.
+                          type: string
+                        space:
+                          description: Space is the name of the space. You can specify
+                            * to select all spaces.
+                          type: string
+                      type: object
+                    type: array
+                  virtualClusters:
+                    description: VirtualClusters specifies the virtual clusters the
+                      access key is allowed to access.
+                    items:
+                      properties:
+                        project:
+                          description: Project is the name of the project.
+                          type: string
+                        virtualCluster:
+                          description: VirtualCluster is the name of the virtual cluster
+                            to access. You can specify * to select all virtual clusters.
+                          type: string
+                      type: object
+                    type: array
+                type: object
+              target:
+                description: Target where this task should get executed
+                properties:
+                  cluster:
+                    description: Cluster defines a connected cluster as target
+                    properties:
+                      cluster:
+                        description: Cluster is the cluster where the task should
+                          get executed
+                        type: string
+                      namespace:
+                        description: Namespace is the namespace where the task should
+                          get executed
+                        type: string
+                    type: object
+                  spaceInstance:
+                    description: SpaceInstance defines a space instance as target
+                    properties:
+                      name:
+                        description: Name is the name of the instance
+                        type: string
+                      project:
+                        description: Project where the instance is in
+                        type: string
+                    type: object
+                  virtualCluster:
+                    description: VirtualCluster defines a virtual cluster as target
+                    properties:
+                      cluster:
+                        description: Cluster is the cluster where the virtual cluster
+                          lies
+                        type: string
+                      name:
+                        description: Name of the virtual cluster
+                        type: string
+                      namespace:
+                        description: Namespace is the namespace where the virtual
+                          cluster is located
+                        type: string
+                    type: object
+                  virtualClusterInstance:
+                    description: VirtualClusterInstance defines a virtual cluster
+                      instance as target
+                    properties:
+                      name:
+                        description: Name is the name of the instance
+                        type: string
+                      project:
+                        description: Project where the instance is in
+                        type: string
+                    type: object
+                type: object
+              task:
+                description: Task defines the task to execute
+                properties:
+                  appTask:
+                    description: AppTask is an app task
+                    properties:
+                      appReference:
+                        description: AppReference is the reference to the app to deploy
+                        properties:
+                          name:
+                            description: Name of the target app
+                            type: string
+                          namespace:
+                            description: Namespace specifies in which target namespace
+                              the app should get deployed in
+                            type: string
+                          parameters:
+                            description: Parameters to use for the app
+                            type: string
+                          releaseName:
+                            description: ReleaseName is the name of the app release
+                            type: string
+                          version:
+                            description: Version of the app
+                            type: string
+                        type: object
+                      rollbackRevision:
+                        description: RollbackRevision is the revision to rollback
+                          to
+                        type: string
+                      type:
+                        description: Type is the task type. Defaults to Upgrade
+                        type: string
+                    type: object
+                  helm:
+                    description: HelmTask executes a helm command
+                    properties:
+                      release:
+                        description: Release holds the release information
+                        properties:
+                          config:
+                            description: Config is the helm config to use to deploy
+                              the release
+                            properties:
+                              annotations:
+                                additionalProperties:
+                                  type: string
+                                description: Annotations are extra annotations for
+                                  this helm release
+                                type: object
+                              bash:
+                                description: Bash holds the bash script to execute
+                                  in a container in the target
+                                properties:
+                                  clusterRole:
+                                    description: ClusterRole is the cluster role to
+                                      use for this job
+                                    type: string
+                                  image:
+                                    description: Image is the image to use for this
+                                      app
+                                    type: string
+                                  script:
+                                    description: Script is the script to execute.
+                                    type: string
+                                type: object
+                              chart:
+                                description: Chart holds information about a chart
+                                  that should get deployed
+                                properties:
+                                  insecureSkipTlsVerify:
+                                    description: If tls certificate checks for the
+                                      chart download should be skipped
+                                    type: boolean
+                                  name:
+                                    description: Name is the chart name in the repository
+                                    type: string
+                                  password:
+                                    description: The password that is required for
+                                      this repository
+                                    type: string
+                                  repoURL:
+                                    description: RepoURL is the repo url where the
+                                      chart can be found
+                                    type: string
+                                  username:
+                                    description: The username that is required for
+                                      this repository
+                                    type: string
+                                  version:
+                                    description: Version is the chart version in the
+                                      repository
+                                    type: string
+                                type: object
+                              manifests:
+                                description: Manifests holds kube manifests that will
+                                  be deployed as a chart
+                                type: string
+                              parameters:
+                                description: Parameters are additional helm chart
+                                  values that will get merged with config and are
+                                  then used to deploy the helm chart.
+                                type: string
+                              values:
+                                description: Values is the set of extra Values added
+                                  to the chart. These values merge with the default
+                                  values inside of the chart. You can use golang templating
+                                  in here with values from parameters.
+                                type: string
+                            type: object
+                          labels:
+                            additionalProperties:
+                              type: string
+                            description: Labels are additional labels for the helm
+                              release.
+                            type: object
+                          name:
+                            description: Name is the name of the release
+                            type: string
+                          namespace:
+                            description: Namespace of the release, if empty will use
+                              the target namespace
+                            type: string
+                        type: object
+                      rollbackRevision:
+                        description: RollbackRevision is the revision to rollback
+                          to
+                        type: string
+                      type:
+                        description: Type is the task type. Defaults to Upgrade
+                        type: string
+                    type: object
+                  spaceCreation:
+                    description: SpaceCreationTask creates a new space
+                    properties:
+                      apps:
+                        description: Apps specifies the apps that should get deployed
+                          by this template
+                        items:
+                          properties:
+                            name:
+                              description: Name of the target app
+                              type: string
+                            namespace:
+                              description: Namespace specifies in which target namespace
+                                the app should get deployed in
+                              type: string
+                            parameters:
+                              description: Parameters to use for the app
+                              type: string
+                            releaseName:
+                              description: ReleaseName is the name of the app release
+                              type: string
+                            version:
+                              description: Version of the app
+                              type: string
+                          type: object
+                        type: array
+                      metadata:
+                        description: Metadata of the space
+                        type: object
+                        x-kubernetes-preserve-unknown-fields: true
+                      objects:
+                        description: Objects are objects to put into the space
+                        type: string
+                      owner:
+                        description: Owner defines the space owner
+                        properties:
+                          team:
+                            description: Team specifies a Loft team.
+                            type: string
+                          user:
+                            description: User specifies a Loft user.
+                            type: string
+                        type: object
+                    type: object
+                  virtualClusterCreation:
+                    description: VirtualClusterCreationTask creates a new virtual
+                      cluster
+                    properties:
+                      access:
+                        description: The virtual cluster access
+                        properties:
+                          defaultClusterRole:
+                            description: Specifies which cluster role should get applied
+                              to users or teams that do not match a rule below.
+                            type: string
+                          rules:
+                            description: Rules defines which users and teams should
+                              have which access to the virtual cluster. If no rule
+                              matches an authenticated incoming user, the user will
+                              get cluster admin access.
+                            items:
+                              properties:
+                                clusterRole:
+                                  description: ClusterRole is the cluster role that
+                                    should be assigned to the
+                                  type: string
+                                teams:
+                                  description: Teams that this rule matches.
+                                  items:
+                                    type: string
+                                  type: array
+                                users:
+                                  description: Users this rule matches. * means all
+                                    users.
+                                  items:
+                                    type: string
+                                  type: array
+                              type: object
+                            type: array
+                        type: object
+                      apps:
+                        description: Apps specifies the apps that should get deployed
+                          by this template
+                        items:
+                          properties:
+                            name:
+                              description: Name of the target app
+                              type: string
+                            namespace:
+                              description: Namespace specifies in which target namespace
+                                the app should get deployed in
+                              type: string
+                            parameters:
+                              description: Parameters to use for the app
+                              type: string
+                            releaseName:
+                              description: ReleaseName is the name of the app release
+                              type: string
+                            version:
+                              description: Version of the app
+                              type: string
+                          type: object
+                        type: array
+                      helmRelease:
+                        description: The helm release configuration for the virtual
+                          cluster.
+                        properties:
+                          chart:
+                            description: infos about what chart to deploy
+                            properties:
+                              name:
+                                description: the name of the helm chart
+                                type: string
+                              repo:
+                                description: the repo of the helm chart
+                                type: string
+                              version:
+                                description: the version of the helm chart to use
+                                type: string
+                            type: object
+                          values:
+                            description: the values for the given chart
+                            type: string
+                        type: object
+                      metadata:
+                        description: The virtual cluster metadata
+                        type: object
+                        x-kubernetes-preserve-unknown-fields: true
+                      objects:
+                        description: Objects is the optional objects configuration
+                          for the virtual cluster
+                        type: string
+                      spaceCreation:
+                        description: SpaceCreationTask creates a new space if defined
+                          for the virtual cluster
+                        properties:
+                          apps:
+                            description: Apps specifies the apps that should get deployed
+                              by this template
+                            items:
+                              properties:
+                                name:
+                                  description: Name of the target app
+                                  type: string
+                                namespace:
+                                  description: Namespace specifies in which target
+                                    namespace the app should get deployed in
+                                  type: string
+                                parameters:
+                                  description: Parameters to use for the app
+                                  type: string
+                                releaseName:
+                                  description: ReleaseName is the name of the app
+                                    release
+                                  type: string
+                                version:
+                                  description: Version of the app
+                                  type: string
+                              type: object
+                            type: array
+                          metadata:
+                            description: Metadata of the space
+                            type: object
+                            x-kubernetes-preserve-unknown-fields: true
+                          objects:
+                            description: Objects are objects to put into the space
+                            type: string
+                          owner:
+                            description: Owner defines the space owner
+                            properties:
+                              team:
+                                description: Team specifies a Loft team.
+                                type: string
+                              user:
+                                description: User specifies a Loft user.
+                                type: string
+                            type: object
+                        type: object
+                      wait:
+                        description: Wait defines if the task should wait until the
+                          virtual cluster is ready
+                        type: boolean
+                    type: object
+                type: object
+            type: object
+          status:
+            properties:
+              conditions:
+                description: Conditions holds several conditions the virtual cluster
+                  might be in
+                items:
+                  description: Condition defines an observation of a Cluster API resource
+                    operational state.
+                  properties:
+                    lastTransitionTime:
+                      description: Last time the condition transitioned from one status
+                        to another. This should be when the underlying condition changed.
+                        If that is not known, then using the time when the API field
+                        changed is acceptable.
+                      format: date-time
+                      type: string
+                    message:
+                      description: A human readable message indicating details about
+                        the transition. This field may be empty.
+                      type: string
+                    reason:
+                      description: The reason for the condition's last transition
+                        in CamelCase. The specific API may choose whether this field
+                        is considered a guaranteed API. This field may not be empty.
+                      type: string
+                    severity:
+                      description: Severity provides an explicit classification of
+                        Reason code, so the users or machines can immediately understand
+                        the current situation and act accordingly. The Severity field
+                        MUST be set only when Status=False.
+                      type: string
+                    status:
+                      description: Status of the condition, one of True, False, Unknown.
+                      type: string
+                    type:
+                      description: Type of condition in CamelCase or in foo.example.com/CamelCase.
+                        Many .condition.type values are consistent across resources
+                        like Available, but because arbitrary conditions can be useful
+                        (see .node.status.conditions), the ability to deconflict is
+                        important.
+                      type: string
+                  required:
+                  - status
+                  - type
+                  type: object
+                type: array
+              containerState:
+                description: 'DEPRECATED: This is not set anymore after migrating
+                  to runners ContainerState describes the container state of the task'
+                properties:
+                  allocatedResources:
+                    additionalProperties:
+                      anyOf:
+                      - type: integer
+                      - type: string
+                      pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
+                      x-kubernetes-int-or-string: true
+                    description: AllocatedResources represents the compute resources
+                      allocated for this container by the node. Kubelet sets this
+                      value to Container.Resources.Requests upon successful pod admission
+                      and after successfully admitting desired pod resize.
+                    type: object
+                  containerID:
+                    description: ContainerID is the ID of the container in the format
+                      '<type>://<container_id>'. Where type is a container runtime
+                      identifier, returned from Version call of CRI API (for example
+                      "containerd").
+                    type: string
+                  image:
+                    description: 'Image is the name of container image that the container
+                      is running. The container image may not match the image used
+                      in the PodSpec, as it may have been resolved by the runtime.
+                      More info: https://kubernetes.io/docs/concepts/containers/images.'
+                    type: string
+                  imageID:
+                    description: ImageID is the image ID of the container's image.
+                      The image ID may not match the image ID of the image used in
+                      the PodSpec, as it may have been resolved by the runtime.
+                    type: string
+                  lastState:
+                    description: LastTerminationState holds the last termination state
+                      of the container to help debug container crashes and restarts.
+                      This field is not populated if the container is still running
+                      and RestartCount is 0.
+                    properties:
+                      running:
+                        description: Details about a running container
+                        properties:
+                          startedAt:
+                            description: Time at which the container was last (re-)started
+                            format: date-time
+                            type: string
+                        type: object
+                      terminated:
+                        description: Details about a terminated container
+                        properties:
+                          containerID:
+                            description: Container's ID in the format '<type>://<container_id>'
+                            type: string
+                          exitCode:
+                            description: Exit status from the last termination of
+                              the container
+                            format: int32
+                            type: integer
+                          finishedAt:
+                            description: Time at which the container last terminated
+                            format: date-time
+                            type: string
+                          message:
+                            description: Message regarding the last termination of
+                              the container
+                            type: string
+                          reason:
+                            description: (brief) reason from the last termination
+                              of the container
+                            type: string
+                          signal:
+                            description: Signal from the last termination of the container
+                            format: int32
+                            type: integer
+                          startedAt:
+                            description: Time at which previous execution of the container
+                              started
+                            format: date-time
+                            type: string
+                        required:
+                        - exitCode
+                        type: object
+                      waiting:
+                        description: Details about a waiting container
+                        properties:
+                          message:
+                            description: Message regarding why the container is not
+                              yet running.
+                            type: string
+                          reason:
+                            description: (brief) reason the container is not yet running.
+                            type: string
+                        type: object
+                    type: object
+                  name:
+                    description: Name is a DNS_LABEL representing the unique name
+                      of the container. Each container in a pod must have a unique
+                      name across all container types. Cannot be updated.
+                    type: string
+                  ready:
+                    description: "Ready specifies whether the container is currently
+                      passing its readiness check. The value will change as readiness
+                      probes keep executing. If no readiness probes are specified,
+                      this field defaults to true once the container is fully started
+                      (see Started field). \n The value is typically used to determine
+                      whether a container is ready to accept traffic."
+                    type: boolean
+                  resources:
+                    description: Resources represents the compute resource requests
+                      and limits that have been successfully enacted on the running
+                      container after it has been started or has been successfully
+                      resized.
+                    properties:
+                      claims:
+                        description: "Claims lists the names of resources, defined
+                          in spec.resourceClaims, that are used by this container.
+                          \n This is an alpha field and requires enabling the DynamicResourceAllocation
+                          feature gate. \n This field is immutable. It can only be
+                          set for containers."
+                        items:
+                          description: ResourceClaim references one entry in PodSpec.ResourceClaims.
+                          properties:
+                            name:
+                              description: Name must match the name of one entry in
+                                pod.spec.resourceClaims of the Pod where this field
+                                is used. It makes that resource available inside a
+                                container.
+                              type: string
+                          required:
+                          - name
+                          type: object
+                        type: array
+                        x-kubernetes-list-map-keys:
+                        - name
+                        x-kubernetes-list-type: map
+                      limits:
+                        additionalProperties:
+                          anyOf:
+                          - type: integer
+                          - type: string
+                          pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
+                          x-kubernetes-int-or-string: true
+                        description: 'Limits describes the maximum amount of compute
+                          resources allowed. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/'
+                        type: object
+                      requests:
+                        additionalProperties:
+                          anyOf:
+                          - type: integer
+                          - type: string
+                          pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
+                          x-kubernetes-int-or-string: true
+                        description: 'Requests describes the minimum amount of compute
+                          resources required. If Requests is omitted for a container,
+                          it defaults to Limits if that is explicitly specified, otherwise
+                          to an implementation-defined value. Requests cannot exceed
+                          Limits. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/'
+                        type: object
+                    type: object
+                  restartCount:
+                    description: RestartCount holds the number of times the container
+                      has been restarted. Kubelet makes an effort to always increment
+                      the value, but there are cases when the state may be lost due
+                      to node restarts and then the value may be reset to 0. The value
+                      is never negative.
+                    format: int32
+                    type: integer
+                  started:
+                    description: Started indicates whether the container has finished
+                      its postStart lifecycle hook and passed its startup probe. Initialized
+                      as false, becomes true after startupProbe is considered successful.
+                      Resets to false when the container is restarted, or if kubelet
+                      loses state temporarily. In both cases, startup probes will
+                      run again. Is always true when no startupProbe is defined and
+                      container is running and has passed the postStart lifecycle
+                      hook. The null value must be treated the same as false.
+                    type: boolean
+                  state:
+                    description: State holds details about the container's current
+                      condition.
+                    properties:
+                      running:
+                        description: Details about a running container
+                        properties:
+                          startedAt:
+                            description: Time at which the container was last (re-)started
+                            format: date-time
+                            type: string
+                        type: object
+                      terminated:
+                        description: Details about a terminated container
+                        properties:
+                          containerID:
+                            description: Container's ID in the format '<type>://<container_id>'
+                            type: string
+                          exitCode:
+                            description: Exit status from the last termination of
+                              the container
+                            format: int32
+                            type: integer
+                          finishedAt:
+                            description: Time at which the container last terminated
+                            format: date-time
+                            type: string
+                          message:
+                            description: Message regarding the last termination of
+                              the container
+                            type: string
+                          reason:
+                            description: (brief) reason from the last termination
+                              of the container
+                            type: string
+                          signal:
+                            description: Signal from the last termination of the container
+                            format: int32
+                            type: integer
+                          startedAt:
+                            description: Time at which previous execution of the container
+                              started
+                            format: date-time
+                            type: string
+                        required:
+                        - exitCode
+                        type: object
+                      waiting:
+                        description: Details about a waiting container
+                        properties:
+                          message:
+                            description: Message regarding why the container is not
+                              yet running.
+                            type: string
+                          reason:
+                            description: (brief) reason the container is not yet running.
+                            type: string
+                        type: object
+                    type: object
+                required:
+                - image
+                - imageID
+                - name
+                - ready
+                - restartCount
+                type: object
+              observedGeneration:
+                description: ObservedGeneration is the latest generation observed
+                  by the controller.
+                format: int64
+                type: integer
+              podPhase:
+                description: PodPhase describes the phase this task is in
+                type: string
+              started:
+                description: Started determines if the task was started
+                type: boolean
+            type: object
+        type: object
+    served: true
+    storage: true

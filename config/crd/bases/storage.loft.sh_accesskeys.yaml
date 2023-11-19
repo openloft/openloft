@@ -1,0 +1,324 @@
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.11.1
+  creationTimestamp: null
+  name: accesskeys.storage.loft.sh
+spec:
+  group: storage.loft.sh
+  names:
+    kind: AccessKey
+    listKind: AccessKeyList
+    plural: accesskeys
+    singular: accesskey
+  scope: Cluster
+  versions:
+  - name: v1
+    schema:
+      openAPIV3Schema:
+        description: AccessKey holds the session information
+        properties:
+          apiVersion:
+            description: 'APIVersion defines the versioned schema of this representation
+              of an object. Servers should convert recognized schemas to the latest
+              internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+            type: string
+          kind:
+            description: 'Kind is a string value representing the REST resource this
+              object represents. Servers may infer this from the endpoint the client
+              submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+            type: string
+          metadata:
+            type: object
+          spec:
+            properties:
+              description:
+                description: Description describes an app
+                type: string
+              disabled:
+                description: If this field is true, the access key is still allowed
+                  to exist, however will not work to access the api
+                type: boolean
+              displayName:
+                description: The display name shown in the UI
+                type: string
+              groups:
+                description: Groups specifies extra groups to apply when using this
+                  access key
+                items:
+                  type: string
+                type: array
+              identity:
+                description: If available, contains information about the sso login
+                  data for this access key
+                properties:
+                  connector:
+                    description: Connector is the name of the connector this access
+                      key was created from
+                    type: string
+                  connectorData:
+                    description: "ConnectorData holds data used by the connector for
+                      subsequent requests after initial authentication, such as access
+                      tokens for upstream providers. \n This data is never shared
+                      with end users, OAuth clients, or through the API."
+                    format: byte
+                    type: string
+                  email:
+                    description: The user email
+                    type: string
+                  emailVerified:
+                    description: If the user email was verified
+                    type: boolean
+                  groups:
+                    description: The groups from the identity provider
+                    items:
+                      type: string
+                    type: array
+                  preferredUsername:
+                    description: The preferred username / display name
+                    type: string
+                  userId:
+                    description: The subject of the user
+                    type: string
+                  username:
+                    description: The username
+                    type: string
+                type: object
+              identityRefresh:
+                description: The last time the identity was refreshed
+                format: date-time
+                type: string
+              key:
+                description: The actual access key that will be used as a bearer token
+                type: string
+              oidcLogin:
+                description: 'DEPRECATED: Use identity instead If available, contains
+                  information about the oidc login data for this access key'
+                properties:
+                  accessToken:
+                    description: The current access token that was created during
+                      login
+                    format: byte
+                    type: string
+                  idToken:
+                    description: The current id token that was created during login
+                    format: byte
+                    type: string
+                  lastRefresh:
+                    description: The last time the id token was refreshed
+                    format: date-time
+                    type: string
+                  refreshToken:
+                    description: The current refresh token that was created during
+                      login
+                    format: byte
+                    type: string
+                type: object
+              oidcProvider:
+                description: If the token is a refresh token, contains information
+                  about it
+                properties:
+                  clientId:
+                    description: ClientId the token was generated for
+                    type: string
+                  nonce:
+                    description: Nonce to use
+                    type: string
+                  redirectUri:
+                    description: RedirectUri to use
+                    type: string
+                  scopes:
+                    description: Scopes to use
+                    type: string
+                type: object
+              parent:
+                description: "DEPRECATED: do not use anymore Parent is used to share
+                  OIDC and external token information with multiple access keys. Since
+                  copying an OIDC refresh token would result in the other access keys
+                  becoming invalid after a refresh parent allows access keys to share
+                  that information. \n The use case for this is primarily user generated
+                  access keys, which will have the users current access key as parent
+                  if it contains an OIDC token."
+                type: string
+              scope:
+                description: Scope defines the scope of the access key.
+                properties:
+                  allowLoftCli:
+                    description: AllowLoftCLI allows certain read-only management
+                      requests to make sure loft cli works correctly with this specific
+                      access key.
+                    type: boolean
+                  projects:
+                    description: Projects specifies the projects the access key should
+                      have access to.
+                    items:
+                      properties:
+                        project:
+                          description: Project is the name of the project. You can
+                            specify * to select all projects.
+                          type: string
+                      type: object
+                    type: array
+                  rules:
+                    description: 'DEPRECATED: Use Projects, Spaces and VirtualClusters
+                      instead Rules specifies the rules that should apply to the access
+                      key.'
+                    items:
+                      description: AccessKeyScopeRule describes a rule for the access
+                        key
+                      properties:
+                        cluster:
+                          description: Cluster that this rule matches. Only applies
+                            to cluster requests. If this is set, no requests for non
+                            cluster requests are allowed. An empty cluster means no
+                            restrictions will apply.
+                          type: string
+                        namespaces:
+                          description: Namespaces that this rule matches. The empty
+                            string "" matches non-namespaced resources. An empty list
+                            implies every namespace.
+                          items:
+                            type: string
+                          type: array
+                        nonResourceURLs:
+                          description: 'NonResourceURLs is a set of URL paths that
+                            should be checked. *s are allowed, but only as the full,
+                            final step in the path. Examples: "/metrics" - Log requests
+                            for apiserver metrics "/healthz*" - Log all health checks'
+                          items:
+                            type: string
+                          type: array
+                        requestTargets:
+                          description: RequestTargets is a list of request targets
+                            that are allowed. An empty list implies every request.
+                          items:
+                            description: RequestTarget defines the target of an incoming
+                              request
+                            type: string
+                          type: array
+                        resources:
+                          description: Resources that this rule matches. An empty
+                            list implies all kinds in all API groups.
+                          items:
+                            description: GroupResources represents resource kinds
+                              in an API group.
+                            properties:
+                              group:
+                                description: Group is the name of the API group that
+                                  contains the resources. The empty string represents
+                                  the core API group.
+                                type: string
+                              resourceNames:
+                                description: ResourceNames is a list of resource instance
+                                  names that the policy matches. Using this field
+                                  requires Resources to be specified. An empty list
+                                  implies that every instance of the resource is matched.
+                                items:
+                                  type: string
+                                type: array
+                              resources:
+                                description: "Resources is a list of resources this
+                                  rule applies to. \n For example: 'pods' matches
+                                  pods. 'pods/log' matches the log subresource of
+                                  pods. '*' matches all resources and their subresources.
+                                  'pods/*' matches all subresources of pods. '*/scale'
+                                  matches all scale subresources. \n If wildcard is
+                                  present, the validation rule will ensure resources
+                                  do not overlap with each other. \n An empty list
+                                  implies all resources and subresources in this API
+                                  groups apply."
+                                items:
+                                  type: string
+                                type: array
+                            type: object
+                          type: array
+                        verbs:
+                          description: The verbs that match this rule. An empty list
+                            implies every verb.
+                          items:
+                            type: string
+                          type: array
+                        virtualClusters:
+                          description: VirtualClusters that this rule matches. Only
+                            applies to virtual cluster requests. An empty list means
+                            no restrictions will apply.
+                          items:
+                            properties:
+                              name:
+                                description: Name of the virtual cluster. Empty means
+                                  all virtual clusters.
+                                type: string
+                              namespace:
+                                description: Namespace of the virtual cluster. Empty
+                                  means all namespaces.
+                                type: string
+                            type: object
+                          type: array
+                      type: object
+                    type: array
+                  spaces:
+                    description: Spaces specifies the spaces the access key is allowed
+                      to access.
+                    items:
+                      properties:
+                        project:
+                          description: Project is the name of the project.
+                          type: string
+                        space:
+                          description: Space is the name of the space. You can specify
+                            * to select all spaces.
+                          type: string
+                      type: object
+                    type: array
+                  virtualClusters:
+                    description: VirtualClusters specifies the virtual clusters the
+                      access key is allowed to access.
+                    items:
+                      properties:
+                        project:
+                          description: Project is the name of the project.
+                          type: string
+                        virtualCluster:
+                          description: VirtualCluster is the name of the virtual cluster
+                            to access. You can specify * to select all virtual clusters.
+                          type: string
+                      type: object
+                    type: array
+                type: object
+              subject:
+                description: Subject is a generic subject that can be used instead
+                  of user or team
+                type: string
+              team:
+                description: The team this access key refers to
+                type: string
+              ttl:
+                description: The time to life for this access key
+                format: int64
+                type: integer
+              ttlAfterLastActivity:
+                description: If this is specified, the time to life for this access
+                  key will start after the lastActivity instead of creation timestamp
+                type: boolean
+              type:
+                description: The type of an access key, which basically describes
+                  if the access key is user managed or managed by loft itself.
+                type: string
+              user:
+                description: The user this access key refers to
+                type: string
+            type: object
+          status:
+            description: AccessKeyStatus holds the status of an access key
+            properties:
+              lastActivity:
+                description: The last time this access key was used to access the
+                  api
+                format: date-time
+                type: string
+            type: object
+        type: object
+    served: true
+    storage: true

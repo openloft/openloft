@@ -1,0 +1,91 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  creationTimestamp: null
+  name: manager-role
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - namespaces
+  verbs:
+  - create
+- apiGroups:
+  - storage.loft.sh
+  resources:
+  - virtualclusterinstances
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - storage.loft.sh
+  resources:
+  - virtualclusterinstances/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - storage.loft.sh
+  resources:
+  - virtualclusterinstances/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - storage.loft.sh
+  resources:
+  - virtualclustertemplates
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - storage.loft.sh
+  resources:
+  - virtualclustertemplates/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - storage.loft.sh
+  resources:
+  - virtualclustertemplates/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - storage.openloft.cn
+  resources:
+  - virtualclusters
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - storage.openloft.cn
+  resources:
+  - virtualclusters/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - storage.openloft.cn
+  resources:
+  - virtualclusters/status
+  verbs:
+  - get
+  - patch
+  - update

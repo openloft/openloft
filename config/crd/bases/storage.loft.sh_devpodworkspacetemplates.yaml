@@ -1,0 +1,697 @@
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.11.1
+  creationTimestamp: null
+  name: devpodworkspacetemplates.storage.loft.sh
+spec:
+  group: storage.loft.sh
+  names:
+    kind: DevPodWorkspaceTemplate
+    listKind: DevPodWorkspaceTemplateList
+    plural: devpodworkspacetemplates
+    singular: devpodworkspacetemplate
+  scope: Cluster
+  versions:
+  - name: v1
+    schema:
+      openAPIV3Schema:
+        description: DevPodWorkspaceTemplate holds the DevPodWorkspaceTemplate information
+        properties:
+          apiVersion:
+            description: 'APIVersion defines the versioned schema of this representation
+              of an object. Servers should convert recognized schemas to the latest
+              internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+            type: string
+          kind:
+            description: 'Kind is a string value representing the REST resource this
+              object represents. Servers may infer this from the endpoint the client
+              submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: DevPodWorkspaceTemplateSpec holds the specification
+            properties:
+              access:
+                description: Access holds the access rights for users and teams
+                items:
+                  description: Access describes the access to a secret
+                  properties:
+                    name:
+                      description: Name is an optional name that is used for this
+                        access rule
+                      type: string
+                    subresources:
+                      description: Subresources defines the sub resources that are
+                        allowed by this access rule
+                      items:
+                        type: string
+                      type: array
+                    teams:
+                      description: Teams specifies which teams should be able to access
+                        this secret with the aforementioned verbs
+                      items:
+                        type: string
+                      type: array
+                    users:
+                      description: Users specifies which users should be able to access
+                        this secret with the aforementioned verbs
+                      items:
+                        type: string
+                      type: array
+                    verbs:
+                      description: Verbs is a list of Verbs that apply to ALL the
+                        ResourceKinds and AttributeRestrictions contained in this
+                        rule. VerbAll represents all kinds.
+                      items:
+                        type: string
+                      type: array
+                  required:
+                  - verbs
+                  type: object
+                type: array
+              description:
+                description: Description describes the virtual cluster template
+                type: string
+              displayName:
+                description: DisplayName is the name that is shown in the UI
+                type: string
+              owner:
+                description: Owner holds the owner of this object
+                properties:
+                  team:
+                    description: Team specifies a Loft team.
+                    type: string
+                  user:
+                    description: User specifies a Loft user.
+                    type: string
+                type: object
+              parameters:
+                description: Parameters define additional app parameters that will
+                  set provider values
+                items:
+                  properties:
+                    defaultValue:
+                      description: DefaultValue is the default value if none is specified
+                      type: string
+                    description:
+                      description: Description is the description to show for this
+                        parameter
+                      type: string
+                    invalidation:
+                      description: Invalidation regex that if matched will reject
+                        the input
+                      type: string
+                    label:
+                      description: Label is the label to show for this parameter
+                      type: string
+                    max:
+                      description: Max is the maximum number if type is number
+                      type: integer
+                    min:
+                      description: Min is the minimum number if type is number
+                      type: integer
+                    options:
+                      description: Options are the options if type is enum
+                      items:
+                        type: string
+                      type: array
+                    placeholder:
+                      description: Placeholder shown in the UI
+                      type: string
+                    required:
+                      description: Required specifies if this parameter is required
+                      type: boolean
+                    section:
+                      description: Section where this app should be displayed. Apps
+                        with the same section name will be grouped together
+                      type: string
+                    type:
+                      description: 'Type of the parameter. Can be one of: string,
+                        multiline, boolean, enum and password'
+                      type: string
+                    validation:
+                      description: Validation regex that if matched will allow the
+                        input
+                      type: string
+                    variable:
+                      description: Variable is the path of the variable. Can be foo
+                        or foo.bar for nested objects.
+                      type: string
+                  type: object
+                type: array
+              template:
+                description: Template holds the DevPod workspace template
+                properties:
+                  provider:
+                    description: Provider holds the DevPod provider configuration
+                    properties:
+                      env:
+                        additionalProperties:
+                          properties:
+                            value:
+                              description: Value of this option.
+                              type: string
+                            valueFrom:
+                              description: ValueFrom specifies a secret where this
+                                value should be taken from.
+                              properties:
+                                projectSecretRef:
+                                  description: ProjectSecretRef is the project secret
+                                    to use for this value.
+                                  properties:
+                                    key:
+                                      description: The key of the secret to select
+                                        from.  Must be a valid secret key.
+                                      type: string
+                                    name:
+                                      description: 'Name of the referent. More info:
+                                        https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                                        TODO: Add other useful fields. apiVersion,
+                                        kind, uid?'
+                                      type: string
+                                    optional:
+                                      description: Specify whether the Secret or its
+                                        key must be defined
+                                      type: boolean
+                                  required:
+                                  - key
+                                  type: object
+                                  x-kubernetes-map-type: atomic
+                                sharedSecretRef:
+                                  description: SharedSecretRef is the shared secret
+                                    to use for this value.
+                                  properties:
+                                    key:
+                                      description: The key of the secret to select
+                                        from.  Must be a valid secret key.
+                                      type: string
+                                    name:
+                                      description: 'Name of the referent. More info:
+                                        https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                                        TODO: Add other useful fields. apiVersion,
+                                        kind, uid?'
+                                      type: string
+                                    optional:
+                                      description: Specify whether the Secret or its
+                                        key must be defined
+                                      type: boolean
+                                  required:
+                                  - key
+                                  type: object
+                                  x-kubernetes-map-type: atomic
+                              type: object
+                          type: object
+                        description: Env are environment options to set when using
+                          the provider.
+                        type: object
+                      name:
+                        description: Name is the name of the provider. This can also
+                          be an url.
+                        type: string
+                      options:
+                        additionalProperties:
+                          properties:
+                            value:
+                              description: Value of this option.
+                              type: string
+                            valueFrom:
+                              description: ValueFrom specifies a secret where this
+                                value should be taken from.
+                              properties:
+                                projectSecretRef:
+                                  description: ProjectSecretRef is the project secret
+                                    to use for this value.
+                                  properties:
+                                    key:
+                                      description: The key of the secret to select
+                                        from.  Must be a valid secret key.
+                                      type: string
+                                    name:
+                                      description: 'Name of the referent. More info:
+                                        https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                                        TODO: Add other useful fields. apiVersion,
+                                        kind, uid?'
+                                      type: string
+                                    optional:
+                                      description: Specify whether the Secret or its
+                                        key must be defined
+                                      type: boolean
+                                  required:
+                                  - key
+                                  type: object
+                                  x-kubernetes-map-type: atomic
+                                sharedSecretRef:
+                                  description: SharedSecretRef is the shared secret
+                                    to use for this value.
+                                  properties:
+                                    key:
+                                      description: The key of the secret to select
+                                        from.  Must be a valid secret key.
+                                      type: string
+                                    name:
+                                      description: 'Name of the referent. More info:
+                                        https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                                        TODO: Add other useful fields. apiVersion,
+                                        kind, uid?'
+                                      type: string
+                                    optional:
+                                      description: Specify whether the Secret or its
+                                        key must be defined
+                                      type: boolean
+                                  required:
+                                  - key
+                                  type: object
+                                  x-kubernetes-map-type: atomic
+                              type: object
+                          type: object
+                        description: Options are the provider option values
+                        type: object
+                    required:
+                    - name
+                    type: object
+                  spaceTemplate:
+                    description: SpaceTemplate is the space that should get created
+                      for this DevPod. If this is specified, the Kubernetes provider
+                      will be selected automatically.
+                    properties:
+                      name:
+                        description: Name holds the name of the template to reference.
+                        type: string
+                      syncOnce:
+                        description: SyncOnce tells the controller to sync the instance
+                          once with the template. This is useful if you want to sync
+                          an instance after a template was changed. To automatically
+                          sync an instance with a template, use 'x.x.x' as version
+                          instead.
+                        type: boolean
+                      version:
+                        description: Version holds the template version to use. Version
+                          is expected to be in semantic versioning format. Alternatively,
+                          you can also exchange major, minor or patch with an 'x'
+                          to tell Loft to automatically select the latest major, minor
+                          or patch version.
+                        type: string
+                    type: object
+                  virtualClusterTemplate:
+                    description: VirtualClusterTemplate is the virtual cluster that
+                      should get created for this DevPod. If this is specified, the
+                      Kubernetes provider will be selected automatically.
+                    properties:
+                      name:
+                        description: Name holds the name of the template to reference.
+                        type: string
+                      syncOnce:
+                        description: SyncOnce tells the controller to sync the instance
+                          once with the template. This is useful if you want to sync
+                          an instance after a template was changed. To automatically
+                          sync an instance with a template, use 'x.x.x' as version
+                          instead.
+                        type: boolean
+                      version:
+                        description: Version holds the template version to use. Version
+                          is expected to be in semantic versioning format. Alternatively,
+                          you can also exchange major, minor or patch with an 'x'
+                          to tell Loft to automatically select the latest major, minor
+                          or patch version.
+                        type: string
+                    type: object
+                  workspaceEnv:
+                    additionalProperties:
+                      properties:
+                        value:
+                          description: Value of this option.
+                          type: string
+                        valueFrom:
+                          description: ValueFrom specifies a secret where this value
+                            should be taken from.
+                          properties:
+                            projectSecretRef:
+                              description: ProjectSecretRef is the project secret
+                                to use for this value.
+                              properties:
+                                key:
+                                  description: The key of the secret to select from.  Must
+                                    be a valid secret key.
+                                  type: string
+                                name:
+                                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                                    TODO: Add other useful fields. apiVersion, kind,
+                                    uid?'
+                                  type: string
+                                optional:
+                                  description: Specify whether the Secret or its key
+                                    must be defined
+                                  type: boolean
+                              required:
+                              - key
+                              type: object
+                              x-kubernetes-map-type: atomic
+                            sharedSecretRef:
+                              description: SharedSecretRef is the shared secret to
+                                use for this value.
+                              properties:
+                                key:
+                                  description: The key of the secret to select from.  Must
+                                    be a valid secret key.
+                                  type: string
+                                name:
+                                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                                    TODO: Add other useful fields. apiVersion, kind,
+                                    uid?'
+                                  type: string
+                                optional:
+                                  description: Specify whether the Secret or its key
+                                    must be defined
+                                  type: boolean
+                              required:
+                              - key
+                              type: object
+                              x-kubernetes-map-type: atomic
+                          type: object
+                      type: object
+                    description: WorkspaceEnv are environment variables that should
+                      be available within the created workspace.
+                    type: object
+                required:
+                - provider
+                type: object
+              versions:
+                description: Versions are different versions of the template that
+                  can be referenced as well
+                items:
+                  properties:
+                    parameters:
+                      description: Parameters define additional app parameters that
+                        will set provider values
+                      items:
+                        properties:
+                          defaultValue:
+                            description: DefaultValue is the default value if none
+                              is specified
+                            type: string
+                          description:
+                            description: Description is the description to show for
+                              this parameter
+                            type: string
+                          invalidation:
+                            description: Invalidation regex that if matched will reject
+                              the input
+                            type: string
+                          label:
+                            description: Label is the label to show for this parameter
+                            type: string
+                          max:
+                            description: Max is the maximum number if type is number
+                            type: integer
+                          min:
+                            description: Min is the minimum number if type is number
+                            type: integer
+                          options:
+                            description: Options are the options if type is enum
+                            items:
+                              type: string
+                            type: array
+                          placeholder:
+                            description: Placeholder shown in the UI
+                            type: string
+                          required:
+                            description: Required specifies if this parameter is required
+                            type: boolean
+                          section:
+                            description: Section where this app should be displayed.
+                              Apps with the same section name will be grouped together
+                            type: string
+                          type:
+                            description: 'Type of the parameter. Can be one of: string,
+                              multiline, boolean, enum and password'
+                            type: string
+                          validation:
+                            description: Validation regex that if matched will allow
+                              the input
+                            type: string
+                          variable:
+                            description: Variable is the path of the variable. Can
+                              be foo or foo.bar for nested objects.
+                            type: string
+                        type: object
+                      type: array
+                    template:
+                      description: Template holds the DevPod template
+                      properties:
+                        provider:
+                          description: Provider holds the DevPod provider configuration
+                          properties:
+                            env:
+                              additionalProperties:
+                                properties:
+                                  value:
+                                    description: Value of this option.
+                                    type: string
+                                  valueFrom:
+                                    description: ValueFrom specifies a secret where
+                                      this value should be taken from.
+                                    properties:
+                                      projectSecretRef:
+                                        description: ProjectSecretRef is the project
+                                          secret to use for this value.
+                                        properties:
+                                          key:
+                                            description: The key of the secret to
+                                              select from.  Must be a valid secret
+                                              key.
+                                            type: string
+                                          name:
+                                            description: 'Name of the referent. More
+                                              info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                                              TODO: Add other useful fields. apiVersion,
+                                              kind, uid?'
+                                            type: string
+                                          optional:
+                                            description: Specify whether the Secret
+                                              or its key must be defined
+                                            type: boolean
+                                        required:
+                                        - key
+                                        type: object
+                                        x-kubernetes-map-type: atomic
+                                      sharedSecretRef:
+                                        description: SharedSecretRef is the shared
+                                          secret to use for this value.
+                                        properties:
+                                          key:
+                                            description: The key of the secret to
+                                              select from.  Must be a valid secret
+                                              key.
+                                            type: string
+                                          name:
+                                            description: 'Name of the referent. More
+                                              info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                                              TODO: Add other useful fields. apiVersion,
+                                              kind, uid?'
+                                            type: string
+                                          optional:
+                                            description: Specify whether the Secret
+                                              or its key must be defined
+                                            type: boolean
+                                        required:
+                                        - key
+                                        type: object
+                                        x-kubernetes-map-type: atomic
+                                    type: object
+                                type: object
+                              description: Env are environment options to set when
+                                using the provider.
+                              type: object
+                            name:
+                              description: Name is the name of the provider. This
+                                can also be an url.
+                              type: string
+                            options:
+                              additionalProperties:
+                                properties:
+                                  value:
+                                    description: Value of this option.
+                                    type: string
+                                  valueFrom:
+                                    description: ValueFrom specifies a secret where
+                                      this value should be taken from.
+                                    properties:
+                                      projectSecretRef:
+                                        description: ProjectSecretRef is the project
+                                          secret to use for this value.
+                                        properties:
+                                          key:
+                                            description: The key of the secret to
+                                              select from.  Must be a valid secret
+                                              key.
+                                            type: string
+                                          name:
+                                            description: 'Name of the referent. More
+                                              info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                                              TODO: Add other useful fields. apiVersion,
+                                              kind, uid?'
+                                            type: string
+                                          optional:
+                                            description: Specify whether the Secret
+                                              or its key must be defined
+                                            type: boolean
+                                        required:
+                                        - key
+                                        type: object
+                                        x-kubernetes-map-type: atomic
+                                      sharedSecretRef:
+                                        description: SharedSecretRef is the shared
+                                          secret to use for this value.
+                                        properties:
+                                          key:
+                                            description: The key of the secret to
+                                              select from.  Must be a valid secret
+                                              key.
+                                            type: string
+                                          name:
+                                            description: 'Name of the referent. More
+                                              info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                                              TODO: Add other useful fields. apiVersion,
+                                              kind, uid?'
+                                            type: string
+                                          optional:
+                                            description: Specify whether the Secret
+                                              or its key must be defined
+                                            type: boolean
+                                        required:
+                                        - key
+                                        type: object
+                                        x-kubernetes-map-type: atomic
+                                    type: object
+                                type: object
+                              description: Options are the provider option values
+                              type: object
+                          required:
+                          - name
+                          type: object
+                        spaceTemplate:
+                          description: SpaceTemplate is the space that should get
+                            created for this DevPod. If this is specified, the Kubernetes
+                            provider will be selected automatically.
+                          properties:
+                            name:
+                              description: Name holds the name of the template to
+                                reference.
+                              type: string
+                            syncOnce:
+                              description: SyncOnce tells the controller to sync the
+                                instance once with the template. This is useful if
+                                you want to sync an instance after a template was
+                                changed. To automatically sync an instance with a
+                                template, use 'x.x.x' as version instead.
+                              type: boolean
+                            version:
+                              description: Version holds the template version to use.
+                                Version is expected to be in semantic versioning format.
+                                Alternatively, you can also exchange major, minor
+                                or patch with an 'x' to tell Loft to automatically
+                                select the latest major, minor or patch version.
+                              type: string
+                          type: object
+                        virtualClusterTemplate:
+                          description: VirtualClusterTemplate is the virtual cluster
+                            that should get created for this DevPod. If this is specified,
+                            the Kubernetes provider will be selected automatically.
+                          properties:
+                            name:
+                              description: Name holds the name of the template to
+                                reference.
+                              type: string
+                            syncOnce:
+                              description: SyncOnce tells the controller to sync the
+                                instance once with the template. This is useful if
+                                you want to sync an instance after a template was
+                                changed. To automatically sync an instance with a
+                                template, use 'x.x.x' as version instead.
+                              type: boolean
+                            version:
+                              description: Version holds the template version to use.
+                                Version is expected to be in semantic versioning format.
+                                Alternatively, you can also exchange major, minor
+                                or patch with an 'x' to tell Loft to automatically
+                                select the latest major, minor or patch version.
+                              type: string
+                          type: object
+                        workspaceEnv:
+                          additionalProperties:
+                            properties:
+                              value:
+                                description: Value of this option.
+                                type: string
+                              valueFrom:
+                                description: ValueFrom specifies a secret where this
+                                  value should be taken from.
+                                properties:
+                                  projectSecretRef:
+                                    description: ProjectSecretRef is the project secret
+                                      to use for this value.
+                                    properties:
+                                      key:
+                                        description: The key of the secret to select
+                                          from.  Must be a valid secret key.
+                                        type: string
+                                      name:
+                                        description: 'Name of the referent. More info:
+                                          https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                                          TODO: Add other useful fields. apiVersion,
+                                          kind, uid?'
+                                        type: string
+                                      optional:
+                                        description: Specify whether the Secret or
+                                          its key must be defined
+                                        type: boolean
+                                    required:
+                                    - key
+                                    type: object
+                                    x-kubernetes-map-type: atomic
+                                  sharedSecretRef:
+                                    description: SharedSecretRef is the shared secret
+                                      to use for this value.
+                                    properties:
+                                      key:
+                                        description: The key of the secret to select
+                                          from.  Must be a valid secret key.
+                                        type: string
+                                      name:
+                                        description: 'Name of the referent. More info:
+                                          https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                                          TODO: Add other useful fields. apiVersion,
+                                          kind, uid?'
+                                        type: string
+                                      optional:
+                                        description: Specify whether the Secret or
+                                          its key must be defined
+                                        type: boolean
+                                    required:
+                                    - key
+                                    type: object
+                                    x-kubernetes-map-type: atomic
+                                type: object
+                            type: object
+                          description: WorkspaceEnv are environment variables that
+                            should be available within the created workspace.
+                          type: object
+                      required:
+                      - provider
+                      type: object
+                    version:
+                      description: Version is the version. Needs to be in X.X.X format.
+                      type: string
+                  type: object
+                type: array
+            type: object
+          status:
+            description: DevPodWorkspaceTemplateStatus holds the status
+            type: object
+        type: object
+    served: true
+    storage: true

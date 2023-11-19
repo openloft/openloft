@@ -1,0 +1,333 @@
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.11.1
+  creationTimestamp: null
+  name: users.storage.loft.sh
+spec:
+  group: storage.loft.sh
+  names:
+    kind: User
+    listKind: UserList
+    plural: users
+    singular: user
+  scope: Cluster
+  versions:
+  - name: v1
+    schema:
+      openAPIV3Schema:
+        description: User holds the user information
+        properties:
+          apiVersion:
+            description: 'APIVersion defines the versioned schema of this representation
+              of an object. Servers should convert recognized schemas to the latest
+              internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+            type: string
+          kind:
+            description: 'Kind is a string value representing the REST resource this
+              object represents. Servers may infer this from the endpoint the client
+              submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+            type: string
+          metadata:
+            type: object
+          spec:
+            properties:
+              access:
+                description: Access holds the access rights for users and teams
+                items:
+                  description: Access describes the access to a secret
+                  properties:
+                    name:
+                      description: Name is an optional name that is used for this
+                        access rule
+                      type: string
+                    subresources:
+                      description: Subresources defines the sub resources that are
+                        allowed by this access rule
+                      items:
+                        type: string
+                      type: array
+                    teams:
+                      description: Teams specifies which teams should be able to access
+                        this secret with the aforementioned verbs
+                      items:
+                        type: string
+                      type: array
+                    users:
+                      description: Users specifies which users should be able to access
+                        this secret with the aforementioned verbs
+                      items:
+                        type: string
+                      type: array
+                    verbs:
+                      description: Verbs is a list of Verbs that apply to ALL the
+                        ResourceKinds and AttributeRestrictions contained in this
+                        rule. VerbAll represents all kinds.
+                      items:
+                        type: string
+                      type: array
+                  required:
+                  - verbs
+                  type: object
+                type: array
+              accessKeysRef:
+                description: 'Deprecated: Use the Access Key CRD instead A reference
+                  to the users access keys'
+                properties:
+                  key:
+                    type: string
+                  secretName:
+                    type: string
+                  secretNamespace:
+                    type: string
+                type: object
+              clusterAccountTemplates:
+                description: ClusterAccountTemplates that should be applied for the
+                  user
+                items:
+                  properties:
+                    accountName:
+                      description: AccountName is the name of the account that should
+                        be created. Defaults to the user or team kubernetes name.
+                      type: string
+                    name:
+                      description: Name of the cluster account template to apply
+                      type: string
+                    sync:
+                      description: Sync defines if Loft should sync changes to the
+                        cluster account template to the cluster accounts and create
+                        new accounts if new clusters match the templates.
+                      type: boolean
+                  type: object
+                type: array
+              clusterRoles:
+                description: ClusterRoles define the cluster roles that the users
+                  should have assigned in the cluster.
+                items:
+                  properties:
+                    name:
+                      description: Name is the cluster role to assign
+                      type: string
+                  type: object
+                type: array
+              codesRef:
+                description: A reference to the users access keys
+                properties:
+                  key:
+                    type: string
+                  secretName:
+                    type: string
+                  secretNamespace:
+                    type: string
+                type: object
+              description:
+                description: Description describes a cluster access object
+                type: string
+              disabled:
+                description: If disabled is true, an user will not be able to login
+                  anymore. All other user resources are unaffected and other users
+                  can still interact with this user
+                type: boolean
+              displayName:
+                description: The display name shown in the UI
+                type: string
+              email:
+                description: The users email address
+                type: string
+              groups:
+                description: The groups the user has access to
+                items:
+                  type: string
+                type: array
+              icon:
+                description: The URL to an icon that should be shown for the user
+                type: string
+              imagePullSecrets:
+                description: ImagePullSecrets holds secret references to image pull
+                  secrets the user has access to.
+                items:
+                  description: KindSecretRef is the reference to a secret containing
+                    the user password
+                  properties:
+                    apiGroup:
+                      description: APIGroup is the api group of the secret
+                      type: string
+                    key:
+                      type: string
+                    kind:
+                      description: Kind is the kind of the secret
+                      type: string
+                    secretName:
+                      type: string
+                    secretNamespace:
+                      type: string
+                  type: object
+                type: array
+              owner:
+                description: Owner holds the owner of this object
+                properties:
+                  team:
+                    description: Team specifies a Loft team.
+                    type: string
+                  user:
+                    description: User specifies a Loft user.
+                    type: string
+                type: object
+              passwordRef:
+                description: A reference to the user password
+                properties:
+                  key:
+                    type: string
+                  secretName:
+                    type: string
+                  secretNamespace:
+                    type: string
+                type: object
+              ssoGroups:
+                description: SSOGroups is used to remember groups that were added
+                  from sso.
+                items:
+                  type: string
+                type: array
+              subject:
+                description: The user subject as presented by the token
+                type: string
+              tokenGeneration:
+                description: TokenGeneration can be used to invalidate all user tokens
+                format: int64
+                type: integer
+              username:
+                description: The username that is used to login
+                type: string
+            type: object
+          status:
+            description: UserStatus holds the status of an user
+            properties:
+              clusterAccountTemplates:
+                description: 'ClusterAccountTemplates holds information about which
+                  cluster account templates were applied DEPRECATED: Use status.clusters
+                  instead'
+                items:
+                  properties:
+                    clusters:
+                      description: Clusters holds the cluster on which this template
+                        was applied
+                      items:
+                        properties:
+                          message:
+                            description: Message describes why loft couldn't sync
+                              the account in human language
+                            type: string
+                          name:
+                            description: Name of the cluster where the cluster account
+                              template was applied
+                            type: string
+                          phase:
+                            description: Status holds the status of the account in
+                              the target cluster
+                            type: string
+                          reason:
+                            description: Reason describes why loft couldn't sync the
+                              account with a machine readable identifier
+                            type: string
+                        type: object
+                      type: array
+                    message:
+                      description: Message describes why loft couldn't sync the account
+                        in human language
+                      type: string
+                    name:
+                      description: Name of the cluster account template that was applied
+                      type: string
+                    phase:
+                      description: Status holds the status of the account in the target
+                        cluster
+                      type: string
+                    reason:
+                      description: Reason describes why loft couldn't sync the account
+                        with a machine readable identifier
+                      type: string
+                  type: object
+                type: array
+              clusters:
+                description: Clusters holds information about which clusters the user
+                  has accounts in
+                items:
+                  description: AccountClusterStatus holds the status of an account
+                    in a cluster
+                  properties:
+                    accounts:
+                      description: Accounts is the account name of the user in the
+                        cluster
+                      items:
+                        type: string
+                      type: array
+                    accountsClusterTemplateStatus:
+                      description: AccountsClusterTemplate status is the status of
+                        the account cluster template that was used to create the cluster
+                        account
+                      items:
+                        properties:
+                          account:
+                            description: Account is the name of the account in the
+                              cluster
+                            type: string
+                          accountTemplateHash:
+                            description: AccountTemplateHash is the hash of the account
+                              template that was applied
+                            type: string
+                          lastTransitionTime:
+                            description: Last time the condition transitioned from
+                              one status to another.
+                            format: date-time
+                            type: string
+                          message:
+                            description: Message describes why loft couldn't sync
+                              the account in human language
+                            type: string
+                          name:
+                            description: Name is the name of the cluster account template
+                            type: string
+                          ownsHash:
+                            description: OwnsHash is the hash of the owns part of
+                              the cluster account template that was applied
+                            type: string
+                          phase:
+                            description: Status holds the status of the account in
+                              the target cluster
+                            type: string
+                          reason:
+                            description: Reason describes why loft couldn't sync the
+                              account with a machine readable identifier
+                            type: string
+                        type: object
+                      type: array
+                    cluster:
+                      description: Cluster is the cluster name of the user in the
+                        cluster
+                      type: string
+                    message:
+                      description: Message describes why loft couldn't sync the account
+                        in human language
+                      type: string
+                    phase:
+                      description: Status holds the status of the account in the target
+                        cluster
+                      type: string
+                    reason:
+                      description: Reason describes why loft couldn't sync the account
+                        with a machine readable identifier
+                      type: string
+                  type: object
+                type: array
+              teams:
+                description: Teams the user is currently part of
+                items:
+                  type: string
+                type: array
+            type: object
+        type: object
+    served: true
+    storage: true
