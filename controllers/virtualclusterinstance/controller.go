@@ -26,9 +26,15 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/client-go/tools/record"
 	ctrl "sigs.k8s.io/controller-runtime"
+	"sigs.k8s.io/controller-runtime/pkg/builder"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+	"sigs.k8s.io/controller-runtime/pkg/event"
+	"sigs.k8s.io/controller-runtime/pkg/handler"
+	"sigs.k8s.io/controller-runtime/pkg/predicate"
+	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 
 	openloftv1 "github.com/openloft/openloft/api/v1"
 	ctrlutils "github.com/openloft/openloft/pkg/controller/utils"
@@ -104,5 +110,32 @@ func (r *Reconciler) SetupWithManager(mgr ctrl.Manager) error {
 		For(&loftv1.VirtualClusterInstance{}).
 		Owns(&corev1.Namespace{}).
 		Owns(&openloftv1.VirtualCluster{}).
+		Watches(
+			&loftv1.VirtualClusterTemplate{},
+			handler.EnqueueRequestsFromMapFunc(func(ctx context.Context, o client.Object) []reconcile.Request {
+				vct := o.(*loftv1.VirtualClusterTemplate)
+
+				vciList := &loftv1.VirtualClusterInstanceList{}
+				if err := mgr.GetClient().List(ctx, vciList); err != nil {
+					r.Log.Error(err, "Failed to list VirtualClusterInstances")
+					return []reconcile.Request{}
+				}
+
+				var requests []reconcile.Request
+				for _, vci := range vciList.Items {
+					if vci.Spec.TemplateRef.Name == vct.Name {
+						requests = append(requests, reconcile.Request{NamespacedName: types.NamespacedName{Name: vci.Name}})
+					}
+				}
+
+				return requests
+			}),
+			// Watch for NodeClaim deletion events
+			builder.WithPredicates(predicate.Funcs{
+				CreateFunc: func(e event.CreateEvent) bool { return false },
+				UpdateFunc: func(e event.UpdateEvent) bool { return true },
+				DeleteFunc: func(e event.DeleteEvent) bool { return false },
+			}),
+		).
 		Complete(r)
 }

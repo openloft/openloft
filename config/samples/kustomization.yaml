@@ -3,4 +3,5 @@ resources:
 - v1_vcluster-isolated-template.yaml
 - v1_vcluster-template.yaml
 - v1_vcluster-instance.yaml
+- v1_vcluster-isolated-instance.yaml
 #+kubebuilder:scaffold:manifestskustomizesamples

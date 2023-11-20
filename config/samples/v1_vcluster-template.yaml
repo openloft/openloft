@@ -26,7 +26,7 @@ spec:
 
         coredns:
           enabled: true
-          integrated: true
+          integrated: false
 
         # Checkout https://vcluster.com/pro/docs/ for more config options
     instanceTemplate:
