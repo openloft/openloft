@@ -33,7 +33,8 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 
 	openloftv1 "github.com/openloft/openloft/api/v1"
-	"github.com/openloft/openloft/controllers"
+	"github.com/openloft/openloft/controllers/virtualclusterinstance"
+	"github.com/openloft/openloft/controllers/virtualclustertemplate"
 	//+kubebuilder:scaffold:imports
 )
 
@@ -90,16 +91,21 @@ func main() {
 		os.Exit(1)
 	}
 
-	if err = (&controllers.VirtualClusterInstanceReconciler{
-		Client: mgr.GetClient(),
-		Scheme: mgr.GetScheme(),
+	ctrlLog := ctrl.Log.WithName("controllers")
+	if err = (&virtualclusterinstance.Reconciler{
+		Client:   mgr.GetClient(),
+		Scheme:   mgr.GetScheme(),
+		Log:      ctrlLog.WithName("VirtualClusterInstance"),
+		Recorder: mgr.GetEventRecorderFor("virtualclusterinstance-controller"),
 	}).SetupWithManager(mgr); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "VirtualClusterInstance")
 		os.Exit(1)
 	}
-	if err = (&controllers.VirtualClusterTemplateReconciler{
-		Client: mgr.GetClient(),
-		Scheme: mgr.GetScheme(),
+	if err = (&virtualclustertemplate.Reconciler{
+		Client:   mgr.GetClient(),
+		Scheme:   mgr.GetScheme(),
+		Log:      ctrlLog.WithName("VirtualClusterTemplate"),
+		Recorder: mgr.GetEventRecorderFor("virtualclustertemplate-controller"),
 	}).SetupWithManager(mgr); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "VirtualClusterTemplate")
 		os.Exit(1)

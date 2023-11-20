@@ -14,38 +14,39 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package controllers
+package virtualclustertemplate
 
 import (
 	"context"
 
+	"github.com/go-logr/logr"
 	v1 "github.com/loft-sh/api/v3/pkg/apis/storage/v1"
 	"k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/client-go/tools/record"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
-	"sigs.k8s.io/controller-runtime/pkg/log"
 )
 
-// VirtualClusterTemplateReconciler reconciles a VirtualClusterTemplate object
-type VirtualClusterTemplateReconciler struct {
+// Reconciler reconciles a VirtualClusterTemplate object
+type Reconciler struct {
 	client.Client
-	Scheme *runtime.Scheme
+	Scheme   *runtime.Scheme
+	Log      logr.Logger
+	Recorder record.EventRecorder
 }
 
 //+kubebuilder:rbac:groups=storage.loft.sh,resources=virtualclustertemplates,verbs=get;list;watch;create;update;patch;delete
 //+kubebuilder:rbac:groups=storage.loft.sh,resources=virtualclustertemplates/status,verbs=get;update;patch
 //+kubebuilder:rbac:groups=storage.loft.sh,resources=virtualclustertemplates/finalizers,verbs=update
 
-func (r *VirtualClusterTemplateReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
-	logger := log.FromContext(ctx).WithName("VirtualClusterTemplateReconciler")
-
-	logger.Info("Reconciling...", "instance", req.NamespacedName)
+func (r *Reconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
+	r.Log.Info("Reconciling VirtualClusterTemplateReconciler", "req.NamespacedName", req.NamespacedName)
 
 	return ctrl.Result{}, nil
 }
 
 // SetupWithManager sets up the controller with the Manager.
-func (r *VirtualClusterTemplateReconciler) SetupWithManager(mgr ctrl.Manager) error {
+func (r *Reconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&v1.VirtualClusterTemplate{}).
 		Complete(r)
