@@ -65,10 +65,17 @@ isolation:
 
 // IsolationConfig defines the configuration for isolation
 type IsolationConfig struct {
-	Enabled       bool           `json:"enabled,omitempty"`
-	ResourceQuota *ResourceQuota `json:"resourceQuota,omitempty"`
+	Enabled   bool    `json:"enabled,omitempty"`
+	Namespace *string `json:"namespace,omitempty"`
+	//+kubebuilder:validation:Enum=privileged;baseline;restricted
+	PodSecurityStandard *string              `json:"podSecurityStandard,omitempty"`
+	NodeProxyPermission *NodeProxyPermission `json:"nodeProxyPermission,omitempty"`
+	ResourceQuota       *ResourceQuota       `json:"resourceQuota,omitempty"`
 }
 
+type NodeProxyPermission struct {
+	Enabled bool `json:"enabled,omitempty"`
+}
 type ResourceQuota struct {
 	Enabled       bool                        `json:"enabled,omitempty"`
 	Quota         corev1.ResourceList         `json:"quota,omitempty"`
