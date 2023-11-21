@@ -65,8 +65,13 @@ isolation:
 
 // IsolationConfig defines the configuration for isolation
 type IsolationConfig struct {
+	Enabled       bool           `json:"enabled,omitempty"`
+	ResourceQuota *ResourceQuota `json:"resourceQuota,omitempty"`
+}
+
+type ResourceQuota struct {
 	Enabled       bool                        `json:"enabled,omitempty"`
 	Quota         corev1.ResourceList         `json:"quota,omitempty"`
-	Scopes        []corev1.ResourceQuotaScope `json:"scopes,omitempty"`
 	ScopeSelector *corev1.ScopeSelector       `json:"scopeSelector,omitempty"`
+	Scopes        []corev1.ResourceQuotaScope `json:"scopes,omitempty"`
 }

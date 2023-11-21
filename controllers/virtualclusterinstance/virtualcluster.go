@@ -69,6 +69,8 @@ func (r *Reconciler) ensureVirtualClusterExists(
 			r.Log.Error(err, "Failed to update VirtualCluster")
 			return ctrl.Result{}, err
 		}
+	} else {
+		r.Log.Info("Skip updating VirtualCluster", "VirtualCluster.Namespace", found.Namespace, "VirtualCluster.Name", found.Name)
 	}
 
 	// Proceed in reconcile loop.

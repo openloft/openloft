@@ -124,6 +124,7 @@ func (r *Reconciler) SetupWithManager(mgr ctrl.Manager) error {
 				var requests []reconcile.Request
 				for _, vci := range vciList.Items {
 					if vci.Spec.TemplateRef.Name == vct.Name {
+						r.Log.Info("Enqueueing VirtualClusterInstance", "VirtualClusterInstance.Name", vci.Name)
 						requests = append(requests, reconcile.Request{NamespacedName: types.NamespacedName{Name: vci.Name}})
 					}
 				}

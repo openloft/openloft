@@ -19,8 +19,29 @@ spec:
         # Below you can configure the virtual cluster
         isolation:
           enabled: true
-          networkPolicy:
-            enabled: false
+          resourceQuota:
+            enabled: true
+            quota:
+              requests.cpu: 10
+              requests.memory: 20Gi
+              requests.storage: "100Gi"
+              requests.ephemeral-storage: 60Gi
+              requests.nvidia.com/gpu: 2
+              limits.nvidia.com/gpu: 2
+              limits.cpu: 20
+              limits.memory: 40Gi
+              limits.ephemeral-storage: 160Gi
+              services.nodeports: 0
+              services.loadbalancers: 1
+              count/endpoints: 40
+              count/pods: 20
+              count/services: 20
+              count/secrets: 100
+              count/configmaps: 100
+              count/persistentvolumeclaims: 20
+            scopeSelector:
+              matchExpressions:
+            scopes:
 
         sync:
           ingresses:

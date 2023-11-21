@@ -4,9 +4,10 @@ import (
 	"context"
 
 	loftv1 "github.com/loft-sh/api/v3/pkg/apis/storage/v1"
-	openloftv1 "github.com/openloft/openloft/api/v1"
-	"gopkg.in/yaml.v3"
 	"k8s.io/apimachinery/pkg/types"
+	"sigs.k8s.io/yaml"
+
+	openloftv1 "github.com/openloft/openloft/api/v1"
 )
 
 func (r *Reconciler) getVirtualClusterSpec(
