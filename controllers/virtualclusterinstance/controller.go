@@ -66,6 +66,7 @@ func generateNamespace(instance *loftv1.VirtualClusterInstance) string {
 //+kubebuilder:rbac:groups=storage.openloft.cn,resources=virtualclusters/finalizers,verbs=update
 
 //+kubebuilder:rbac:groups="",resources=namespaces,verbs=get;list;watch;create;update;patch;delete
+//+kubebuilder:rbac:groups=networking.k8s.io,resources=ingresses,verbs=get;list;watch;create;update;patch;delete
 //+kubebuilder:rbac:groups=core,resources=events,verbs=create;patch
 
 func (r *Reconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
