@@ -101,6 +101,10 @@ func (r *Reconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Resu
 		return result, err
 	}
 
+	if result, err := r.ensureIngressExists(ctx, vci); ctrlutils.ShouldReturn(result, err) {
+		return result, err
+	}
+
 	return ctrl.Result{}, nil
 }
 

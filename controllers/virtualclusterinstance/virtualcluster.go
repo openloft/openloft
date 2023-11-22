@@ -22,7 +22,7 @@ func (r *Reconciler) virtualClusterForVirtualClusterInstance(
 		},
 	}
 
-	// Set the ownerRef for the Namespace
+	// Set the ownerRef for the VirtualCluster
 	// More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/owners-dependents/
 	if err := ctrl.SetControllerReference(vci, vc, r.Scheme); err != nil {
 		return nil, err

@@ -2,6 +2,7 @@ package virtualclusterinstance
 
 import (
 	"context"
+	"fmt"
 
 	loftv1 "github.com/loft-sh/api/v3/pkg/apis/storage/v1"
 	"k8s.io/apimachinery/pkg/types"
@@ -25,6 +26,21 @@ func (r *Reconciler) getVirtualClusterSpec(
 		r.Log.Error(err, "Failed to unmarshal VirtualClusterSpec")
 		// Let's return the error for the reconciliation be re-triggered again
 		return nil, err
+	}
+
+	// TODO: How to get the domain name?
+
+	extraArgs := []string{
+		fmt.Sprintf("--tls-san=%s.%s", vci.Name, "openloft.cn"),
+		fmt.Sprintf("--out-kube-config-server=https://%s.%s", vci.Name, "openloft.cn"),
+	}
+
+	if vcSpec.Syncer != nil {
+		vcSpec.Syncer.ExtraArgs = append(vcSpec.Syncer.ExtraArgs, extraArgs...)
+	} else {
+		vcSpec.Syncer = &openloftv1.SyncerConfig{
+			ExtraArgs: extraArgs,
+		}
 	}
 
 	return vcSpec, nil

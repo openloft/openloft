@@ -28,6 +28,7 @@ type VirtualClusterSpec struct {
 	CoreDNS     *CoreDNSConfig    `json:"coredns,omitempty"`
 	Isolation   *IsolationConfig  `json:"isolation,omitempty"`
 	Sync        *SyncConfig       `json:"sync,omitempty"`
+	Syncer      *SyncerConfig     `json:"syncer,omitempty"`
 }
 
 // VirtualClusterStatus defines the observed state of VirtualCluster
