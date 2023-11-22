@@ -22,7 +22,7 @@ func (r *Reconciler) ingressForVirtualClusterInstance(
 
 	ingress := &networkingv1.Ingress{
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      fmt.Sprintf("%s-ingress", vci.Name),
+			Name:      generateIngressName(vci),
 			Namespace: generateNamespace(vci),
 			Annotations: map[string]string{
 				"nginx.ingress.kubernetes.io/backend-protocol": "HTTPS",
@@ -72,7 +72,7 @@ func (r *Reconciler) ensureIngressExists(
 	ctx context.Context, vci *loftv1.VirtualClusterInstance) (ctrl.Result, error) {
 
 	found := &networkingv1.Ingress{}
-	err := r.Get(ctx, types.NamespacedName{Name: vci.Name, Namespace: generateNamespace(vci)}, found)
+	err := r.Get(ctx, types.NamespacedName{Name: generateIngressName(vci), Namespace: generateNamespace(vci)}, found)
 	if err != nil && apierrors.IsNotFound(err) {
 		ingress, err := r.ingressForVirtualClusterInstance(vci)
 		if err != nil {

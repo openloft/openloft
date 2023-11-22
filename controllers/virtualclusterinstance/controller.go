@@ -53,8 +53,12 @@ type Reconciler struct {
 	Recorder record.EventRecorder
 }
 
-func generateNamespace(instance *loftv1.VirtualClusterInstance) string {
-	return fmt.Sprintf("vc-%s", instance.Name)
+func generateNamespace(vci *loftv1.VirtualClusterInstance) string {
+	return fmt.Sprintf("vc-%s", vci.Name)
+}
+
+func generateIngressName(vci *loftv1.VirtualClusterInstance) string {
+	return fmt.Sprintf("%s-ingress", vci.Name)
 }
 
 //+kubebuilder:rbac:groups=storage.loft.sh,resources=virtualclusterinstances,verbs=get;list;watch;create;update;patch;delete
