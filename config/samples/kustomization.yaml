@@ -1,7 +1,7 @@
 ## Append samples you want in your CSV to this file as resources ##
 resources:
-- v1_vcluster-isolated-template.yaml
-- v1_vcluster-template.yaml
-- v1_vcluster-instance.yaml
-- v1_vcluster-isolated-instance.yaml
+- default/storage_v1_virtualclustertemplate.yaml
+- default/storage_v1_virtualclusterinstance.yaml
+- isolated/storage_v1_virtualclustertemplate.yaml
+- isolated/storage_v1_virtualclusterinstance.yaml
 #+kubebuilder:scaffold:manifestskustomizesamples

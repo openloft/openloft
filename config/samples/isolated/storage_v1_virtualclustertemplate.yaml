@@ -26,8 +26,8 @@ spec:
               requests.memory: 20Gi
               requests.storage: "100Gi"
               requests.ephemeral-storage: 60Gi
-              requests.nvidia.com/gpu: 2
-              limits.nvidia.com/gpu: 2
+              requests.nvidia.com/gpu: 16
+              limits.nvidia.com/gpu: 16
               limits.cpu: 20
               limits.memory: 40Gi
               limits.ephemeral-storage: 160Gi
@@ -49,7 +49,6 @@ spec:
 
         coredns:
           enabled: true
-          integrated: false
 
         # Checkout https://vcluster.com/pro/docs/ for more config options
     instanceTemplate:

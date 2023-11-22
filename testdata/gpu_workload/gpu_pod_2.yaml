@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: gpupod2
+  namespace: default
+spec:
+  containers:
+    - image: busybox
+      command:
+        - sleep
+        - "3600"
+      imagePullPolicy: IfNotPresent
+      name: busybox
+      resources:
+        requests:
+          nvidia.com/gpu: 8
+        limits:
+          nvidia.com/gpu: 8
+  restartPolicy: Always
