@@ -55,8 +55,7 @@ func (r *Reconciler) ingressForVirtualClusterInstance(
 			IngressClassName: ingressClassName,
 			Rules: []networkingv1.IngressRule{
 				{
-					// TODO: How to get the domain name?
-					Host: fmt.Sprintf("%s.%s", vci.Name, "openloft.cn"),
+					Host: fmt.Sprintf("%s", vci.Name),
 					IngressRuleValue: networkingv1.IngressRuleValue{
 						HTTP: &networkingv1.HTTPIngressRuleValue{
 							Paths: []networkingv1.HTTPIngressPath{

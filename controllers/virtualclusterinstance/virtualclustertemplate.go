@@ -28,11 +28,9 @@ func (r *Reconciler) getVirtualClusterSpec(
 		return nil, err
 	}
 
-	// TODO: How to get the domain name?
-
 	extraArgs := []string{
-		fmt.Sprintf("--tls-san=%s.%s", vci.Name, "openloft.cn"),
-		fmt.Sprintf("--out-kube-config-server=https://%s.%s", vci.Name, "openloft.cn"),
+		fmt.Sprintf("--tls-san=%s", vci.Name),
+		fmt.Sprintf("--out-kube-config-server=https://%s", vci.Name),
 	}
 
 	if vcSpec.Syncer != nil {
