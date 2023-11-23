@@ -45,9 +45,10 @@ func (r *Reconciler) ingressForVirtualClusterInstance(
 			Name:      generateIngressName(vci),
 			Namespace: generateNamespace(vci),
 			Annotations: map[string]string{
-				"nginx.ingress.kubernetes.io/backend-protocol": "HTTPS",
-				"nginx.ingress.kubernetes.io/ssl-passthrough":  "true",
-				"nginx.ingress.kubernetes.io/ssl-redirect":     "true",
+				fmt.Sprintf("%s.ingress.kubernetes.io/backend-protocol", *ingressClassName):   "HTTPS",
+				fmt.Sprintf("%s.ingress.kubernetes.io/force-ssl-redirect", *ingressClassName): "true",
+				fmt.Sprintf("%s.ingress.kubernetes.io/ssl-passthrough", *ingressClassName):    "true",
+				"kubernetes.io/ingress.class": *ingressClassName,
 			},
 		},
 		Spec: networkingv1.IngressSpec{
