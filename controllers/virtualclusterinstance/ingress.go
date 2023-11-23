@@ -12,12 +12,32 @@ import (
 	ctrl "sigs.k8s.io/controller-runtime"
 )
 
+func (r *Reconciler) defaultIngressClassName(ctx context.Context) (string, error) {
+	ingressClasses := &networkingv1.IngressClassList{}
+	err := r.List(ctx, ingressClasses)
+	if err != nil {
+		r.Log.Error(err, "Failed to list IngressClasses")
+		return "", err
+	}
+
+	if len(ingressClasses.Items) == 0 {
+		return "", fmt.Errorf("no IngressClass found")
+	}
+
+	for _, ingressClass := range ingressClasses.Items {
+		if ingressClass.Annotations["ingressclass.kubernetes.io/is-default-class"] == "true" {
+			return ingressClass.Name, nil
+		}
+	}
+
+	// Incase no default ingress class is found, return the first one
+	return ingressClasses.Items[0].Name, nil
+}
+
 func (r *Reconciler) ingressForVirtualClusterInstance(
-	vci *loftv1.VirtualClusterInstance) (*networkingv1.Ingress, error) {
+	vci *loftv1.VirtualClusterInstance, ingressClassName *string) (*networkingv1.Ingress, error) {
 
 	// https://www.vcluster.com/docs/using-vclusters/access#via-ingress
-	// XXX: Hardcode as nginx for now
-	ingressClassName := "nginx"
 	pathType := networkingv1.PathTypeImplementationSpecific
 
 	ingress := &networkingv1.Ingress{
@@ -31,7 +51,7 @@ func (r *Reconciler) ingressForVirtualClusterInstance(
 			},
 		},
 		Spec: networkingv1.IngressSpec{
-			IngressClassName: &ingressClassName,
+			IngressClassName: ingressClassName,
 			Rules: []networkingv1.IngressRule{
 				{
 					// TODO: How to get the domain name?
@@ -74,7 +94,12 @@ func (r *Reconciler) ensureIngressExists(
 	found := &networkingv1.Ingress{}
 	err := r.Get(ctx, types.NamespacedName{Name: generateIngressName(vci), Namespace: generateNamespace(vci)}, found)
 	if err != nil && apierrors.IsNotFound(err) {
-		ingress, err := r.ingressForVirtualClusterInstance(vci)
+		ingressClassName, err := r.defaultIngressClassName(ctx)
+		if err != nil {
+			r.Log.Error(err, "Failed to get default IngressClass")
+			return ctrl.Result{}, err
+		}
+		ingress, err := r.ingressForVirtualClusterInstance(vci, &ingressClassName)
 		if err != nil {
 			r.Log.Error(err, "Failed to define new Ingress resource for VirtualClusterInstance")
 			return ctrl.Result{}, err
