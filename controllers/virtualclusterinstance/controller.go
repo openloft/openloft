@@ -19,6 +19,7 @@ package virtualclusterinstance
 import (
 	"context"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/go-logr/logr"
@@ -53,12 +54,16 @@ type Reconciler struct {
 	Recorder record.EventRecorder
 }
 
+func normalizedName(vci *loftv1.VirtualClusterInstance) string {
+	return strings.ReplaceAll(vci.Name, ".", "-")
+}
+
 func generateNamespace(vci *loftv1.VirtualClusterInstance) string {
-	return fmt.Sprintf("vc-%s", vci.Name)
+	return fmt.Sprintf("vc-%s", normalizedName(vci))
 }
 
 func generateIngressName(vci *loftv1.VirtualClusterInstance) string {
-	return fmt.Sprintf("%s-ingress", vci.Name)
+	return fmt.Sprintf("ingress-%s", normalizedName(vci))
 }
 
 //+kubebuilder:rbac:groups=storage.loft.sh,resources=virtualclusterinstances,verbs=get;list;watch;create;update;patch;delete

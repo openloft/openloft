@@ -17,7 +17,7 @@ func (r *Reconciler) virtualClusterForVirtualClusterInstance(
 	vci *loftv1.VirtualClusterInstance) (*openloftv1.VirtualCluster, error) {
 	vc := &openloftv1.VirtualCluster{
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      vci.Name,
+			Name:      normalizedName(vci),
 			Namespace: generateNamespace(vci),
 		},
 	}
@@ -36,7 +36,7 @@ func (r *Reconciler) ensureVirtualClusterExists(
 	vcSpec *openloftv1.VirtualClusterSpec) (ctrl.Result, error) {
 
 	found := &openloftv1.VirtualCluster{}
-	err := r.Get(ctx, types.NamespacedName{Name: vci.Name, Namespace: generateNamespace(vci)}, found)
+	err := r.Get(ctx, types.NamespacedName{Name: normalizedName(vci), Namespace: generateNamespace(vci)}, found)
 	if err != nil && apierrors.IsNotFound(err) {
 		vc, err := r.virtualClusterForVirtualClusterInstance(vci)
 		if err != nil {

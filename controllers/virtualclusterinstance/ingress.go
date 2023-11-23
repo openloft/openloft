@@ -55,14 +55,14 @@ func (r *Reconciler) ingressForVirtualClusterInstance(
 			IngressClassName: ingressClassName,
 			Rules: []networkingv1.IngressRule{
 				{
-					Host: fmt.Sprintf("%s", vci.Name),
+					Host: vci.Name,
 					IngressRuleValue: networkingv1.IngressRuleValue{
 						HTTP: &networkingv1.HTTPIngressRuleValue{
 							Paths: []networkingv1.HTTPIngressPath{
 								{
 									Backend: networkingv1.IngressBackend{
 										Service: &networkingv1.IngressServiceBackend{
-											Name: vci.Name,
+											Name: normalizedName(vci),
 											Port: networkingv1.ServiceBackendPort{
 												Number: 443,
 											},
