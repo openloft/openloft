@@ -2,7 +2,7 @@ package v1
 
 import corev1 "k8s.io/api/core/v1"
 
-/* Copied from https://github.com/loft-sh/vcluster/blob/main/charts/k3s/values.yaml#L27
+/* Copied from https://github.com/loft-sh/vcluster/blob/main/charts/k3s/values.yaml#L135
 
 # Syncer configuration
 syncer:
