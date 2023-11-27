@@ -44,10 +44,16 @@ spec:
             scopes:
 
         sync:
+          nodes:
+            enabled: false
+
           ingresses:
             enabled: true
 
         coredns:
+          enabled: true
+
+        ingress:
           enabled: true
 
         # Checkout https://vcluster.com/pro/docs/ for more config options

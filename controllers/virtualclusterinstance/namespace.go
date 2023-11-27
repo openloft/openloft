@@ -15,7 +15,7 @@ func (r *Reconciler) namespaceForVirtualClusterInstance(
 	vci *loftv1.VirtualClusterInstance) (*corev1.Namespace, error) {
 	ns := &corev1.Namespace{
 		ObjectMeta: metav1.ObjectMeta{
-			Name: generateNamespace(vci),
+			Name: normalizedNamespace(vci),
 		},
 	}
 
@@ -32,7 +32,7 @@ func (r *Reconciler) ensureNamespaceExists(
 	ctx context.Context, vci *loftv1.VirtualClusterInstance) (ctrl.Result, error) {
 
 	found := &corev1.Namespace{}
-	err := r.Get(ctx, types.NamespacedName{Name: generateNamespace(vci)}, found)
+	err := r.Get(ctx, types.NamespacedName{Name: normalizedNamespace(vci)}, found)
 	if err != nil && apierrors.IsNotFound(err) {
 		ns, err := r.namespaceForVirtualClusterInstance(vci)
 		if err != nil {

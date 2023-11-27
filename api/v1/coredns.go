@@ -80,8 +80,8 @@ coredns:
   podLabels: {}
 */
 
-// CoreDNSConfig defines the configuration for CoreDNS
-type CoreDNSConfig struct {
+// CoreDNS defines the configuration for CoreDNS
+type CoreDNS struct {
 	Enabled        bool                         `json:"enabled,omitempty"`
 	Integrated     bool                         `json:"integrated,omitempty"`
 	Plugin         *CoreDNSPluginConfig         `json:"plugin,omitempty"`

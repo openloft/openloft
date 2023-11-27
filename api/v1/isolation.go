@@ -63,8 +63,8 @@ isolation:
           - 192.168.0.0/16
 */
 
-// IsolationConfig defines the configuration for isolation
-type IsolationConfig struct {
+// Isolation defines the configuration for isolation
+type Isolation struct {
 	Enabled   bool    `json:"enabled,omitempty"`
 	Namespace *string `json:"namespace,omitempty"`
 	//+kubebuilder:validation:Enum=privileged;baseline;restricted
@@ -76,6 +76,7 @@ type IsolationConfig struct {
 type NodeProxyPermission struct {
 	Enabled bool `json:"enabled,omitempty"`
 }
+
 type ResourceQuota struct {
 	Enabled       bool                        `json:"enabled,omitempty"`
 	Quota         corev1.ResourceList         `json:"quota,omitempty"`

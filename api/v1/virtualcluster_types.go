@@ -25,10 +25,12 @@ import (
 type VirtualClusterSpec struct {
 	Affinity    *corev1.Affinity  `json:"affinity,omitempty"`
 	Annotations map[string]string `json:"annotations,omitempty"`
-	CoreDNS     *CoreDNSConfig    `json:"coredns,omitempty"`
-	Isolation   *IsolationConfig  `json:"isolation,omitempty"`
-	Sync        *SyncConfig       `json:"sync,omitempty"`
-	Syncer      *SyncerConfig     `json:"syncer,omitempty"`
+	CoreDNS     *CoreDNS          `json:"coredns,omitempty"`
+	Isolation   *Isolation        `json:"isolation,omitempty"`
+	Sync        *Sync             `json:"sync,omitempty"`
+	Syncer      *Syncer           `json:"syncer,omitempty"`
+	Service     *Service          `json:"service,omitempty"`
+	Ingress     *Ingress          `json:"ingress,omitempty"`
 }
 
 // VirtualClusterStatus defines the observed state of VirtualCluster

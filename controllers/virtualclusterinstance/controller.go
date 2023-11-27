@@ -58,12 +58,8 @@ func normalizedName(vci *loftv1.VirtualClusterInstance) string {
 	return strings.ReplaceAll(vci.Name, ".", "-")
 }
 
-func generateNamespace(vci *loftv1.VirtualClusterInstance) string {
+func normalizedNamespace(vci *loftv1.VirtualClusterInstance) string {
 	return fmt.Sprintf("vc-%s", normalizedName(vci))
-}
-
-func generateIngressName(vci *loftv1.VirtualClusterInstance) string {
-	return fmt.Sprintf("ingress-%s", normalizedName(vci))
 }
 
 //+kubebuilder:rbac:groups=storage.loft.sh,resources=virtualclusterinstances,verbs=get;list;watch;create;update;patch;delete
@@ -75,7 +71,7 @@ func generateIngressName(vci *loftv1.VirtualClusterInstance) string {
 //+kubebuilder:rbac:groups=storage.openloft.cn,resources=virtualclusters/finalizers,verbs=update
 
 //+kubebuilder:rbac:groups="",resources=namespaces,verbs=get;list;watch;create;update;patch;delete
-//+kubebuilder:rbac:groups=networking.k8s.io,resources=ingresses,verbs=get;list;watch;create;update;patch;delete
+//+kubebuilder:rbac:groups="",resources=services,verbs=get;list;watch
 //+kubebuilder:rbac:groups=networking.k8s.io,resources=ingressclasses,verbs=get;list;watch
 //+kubebuilder:rbac:groups=core,resources=events,verbs=create;patch
 
@@ -109,10 +105,6 @@ func (r *Reconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Resu
 	}
 
 	if result, err := r.ensureVirtualClusterExists(ctx, vci, vcSpec); ctrlutils.ShouldReturn(result, err) {
-		return result, err
-	}
-
-	if result, err := r.ensureIngressExists(ctx, vci); ctrlutils.ShouldReturn(result, err) {
 		return result, err
 	}
 

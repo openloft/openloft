@@ -76,12 +76,19 @@ sync:
       ---
 */
 
-// SyncConfig defines the configuration for sync
-type SyncConfig struct {
-	Ingresses *IngressConfig `json:"ingresses,omitempty"`
+// Sync defines the configuration for sync
+type Sync struct {
+	Ingresses *Ingresses `json:"ingresses,omitempty"`
+	Nodes     *Nodes     `json:"nodes,omitempty"`
 }
 
-// IngressConfig defines the configuration for ingress
-type IngressConfig struct {
+// Ingresses defines the configuration for ingress
+type Ingresses struct {
 	Enabled bool `json:"enabled,omitempty"`
+}
+
+type Nodes struct {
+	// Enabled controls whether the nodes are Fake or Real
+	Enabled      bool   `json:"enabled,omitempty"`
+	NodeSelector string `json:"nodeSelector,omitempty"`
 }

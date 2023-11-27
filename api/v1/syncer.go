@@ -32,7 +32,7 @@ syncer:
   serviceAnnotations: {}
 */
 
-type SyncerConfig struct {
+type Syncer struct {
 	ExtraArgs []string        `json:"extraArgs,omitempty"`
 	Env       []corev1.EnvVar `json:"env,omitempty"`
 }

@@ -3,125 +3,81 @@ package virtualclusterinstance
 import (
 	"context"
 	"fmt"
+	"time"
 
 	loftv1 "github.com/loft-sh/api/v3/pkg/apis/storage/v1"
+	corev1 "k8s.io/api/core/v1"
 	networkingv1 "k8s.io/api/networking/v1"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
-	ctrl "sigs.k8s.io/controller-runtime"
+	"k8s.io/apimachinery/pkg/util/wait"
 )
 
-func (r *Reconciler) defaultIngressClassName(ctx context.Context) (string, error) {
+func (r *Reconciler) defaultIngressClass(ctx context.Context) (*networkingv1.IngressClass, error) {
 	ingressClasses := &networkingv1.IngressClassList{}
 	err := r.List(ctx, ingressClasses)
 	if err != nil {
 		r.Log.Error(err, "Failed to list IngressClasses")
-		return "", err
+		return nil, err
 	}
 
 	if len(ingressClasses.Items) == 0 {
-		return "", fmt.Errorf("no IngressClass found")
+		return nil, fmt.Errorf("no IngressClass found")
 	}
 
 	for _, ingressClass := range ingressClasses.Items {
 		if ingressClass.Annotations["ingressclass.kubernetes.io/is-default-class"] == "true" {
-			return ingressClass.Name, nil
+			return &ingressClass, nil
 		}
 	}
 
 	// Incase no default ingress class is found, return the first one
-	return ingressClasses.Items[0].Name, nil
+	return &ingressClasses.Items[0], nil
 }
 
-func (r *Reconciler) ingressForVirtualClusterInstance(
-	vci *loftv1.VirtualClusterInstance, ingressClassName *string) (*networkingv1.Ingress, error) {
+func (r *Reconciler) discoverHostFromService(ctx context.Context, vci *loftv1.VirtualClusterInstance) (string, error) {
+	name := normalizedName(vci)
+	namespace := normalizedNamespace(vci)
 
-	// https://www.vcluster.com/docs/using-vclusters/access#via-ingress
-	pathType := networkingv1.PathTypeImplementationSpecific
-
-	ingress := &networkingv1.Ingress{
-		ObjectMeta: metav1.ObjectMeta{
-			Name:      generateIngressName(vci),
-			Namespace: generateNamespace(vci),
-			Annotations: map[string]string{
-				fmt.Sprintf("%s.ingress.kubernetes.io/backend-protocol", *ingressClassName):   "HTTPS",
-				fmt.Sprintf("%s.ingress.kubernetes.io/force-ssl-redirect", *ingressClassName): "true",
-				fmt.Sprintf("%s.ingress.kubernetes.io/ssl-passthrough", *ingressClassName):    "true",
-				"kubernetes.io/ingress.class": *ingressClassName,
-			},
-		},
-		Spec: networkingv1.IngressSpec{
-			IngressClassName: ingressClassName,
-			Rules: []networkingv1.IngressRule{
-				{
-					Host: vci.Name,
-					IngressRuleValue: networkingv1.IngressRuleValue{
-						HTTP: &networkingv1.HTTPIngressRuleValue{
-							Paths: []networkingv1.HTTPIngressPath{
-								{
-									Backend: networkingv1.IngressBackend{
-										Service: &networkingv1.IngressServiceBackend{
-											Name: normalizedName(vci),
-											Port: networkingv1.ServiceBackendPort{
-												Number: 443,
-											},
-										},
-									},
-									Path:     "/",
-									PathType: &pathType,
-								},
-							},
-						},
-					},
-				},
-			},
-		},
-	}
-
-	// Set the ownerRef for the Ingress
-	// More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/owners-dependents/
-	if err := ctrl.SetControllerReference(vci, ingress, r.Scheme); err != nil {
-		return nil, err
-	}
-
-	return ingress, nil
-}
-
-func (r *Reconciler) ensureIngressExists(
-	ctx context.Context, vci *loftv1.VirtualClusterInstance) (ctrl.Result, error) {
-
-	found := &networkingv1.Ingress{}
-	err := r.Get(ctx, types.NamespacedName{Name: generateIngressName(vci), Namespace: generateNamespace(vci)}, found)
-	if err != nil && apierrors.IsNotFound(err) {
-		ingressClassName, err := r.defaultIngressClassName(ctx)
+	host := ""
+	err := wait.PollImmediate(time.Second*2, time.Second*10, func() (done bool, err error) {
+		service := &corev1.Service{}
+		err = r.Get(ctx, types.NamespacedName{Name: name, Namespace: namespace}, service)
 		if err != nil {
-			r.Log.Error(err, "Failed to get default IngressClass")
-			return ctrl.Result{}, err
-		}
-		ingress, err := r.ingressForVirtualClusterInstance(vci, &ingressClassName)
-		if err != nil {
-			r.Log.Error(err, "Failed to define new Ingress resource for VirtualClusterInstance")
-			return ctrl.Result{}, err
-		}
-		r.Log.Info("Creating a new Ingress",
-			"Ingress.Namespace", ingress.Namespace, "Ingress.Name", ingress.Name)
-		if err = r.Create(ctx, ingress); err != nil {
-			r.Log.Error(err, "Failed to create new Ingress",
-				"Ingress.Namespace", ingress.Namespace, "Ingress.Name", ingress.Name)
-			return ctrl.Result{}, err
+			if apierrors.IsNotFound(err) {
+				return true, nil
+			}
+
+			return false, err
 		}
 
-		// Ingress created successfully
-		// We will requeue the reconciliation so that we can ensure the state
-		// and move forward for the next operations
-		return ctrl.Result{RequeueAfter: defaultRequeuePeriod}, nil
-	} else if err != nil {
-		r.Log.Error(err, "Failed to get Ingress")
-		// Let's return the error for the reconciliation be re-triggered again
-		return ctrl.Result{}, err
+		// not a load balancer? Then don't wait
+		if service.Spec.Type != corev1.ServiceTypeLoadBalancer {
+			return true, nil
+		}
+
+		if len(service.Status.LoadBalancer.Ingress) == 0 {
+			// Waiting for vcluster LoadBalancer ip
+			return false, nil
+		}
+
+		if service.Status.LoadBalancer.Ingress[0].Hostname != "" {
+			host = service.Status.LoadBalancer.Ingress[0].Hostname
+		} else if service.Status.LoadBalancer.Ingress[0].IP != "" {
+			host = service.Status.LoadBalancer.Ingress[0].IP
+		}
+
+		if host == "" {
+			return false, nil
+		}
+		return true, nil
+	})
+	if err != nil {
+		return "", fmt.Errorf("can not get vcluster service: %v", err)
 	}
 
-	// Proceed in reconcile loop.
-	return ctrl.Result{}, nil
+	if host == "" {
+		host = fmt.Sprintf("%s.%s.svc", name, namespace)
+	}
+	return host, nil
 }
