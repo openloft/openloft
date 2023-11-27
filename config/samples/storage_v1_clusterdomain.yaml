@@ -1,0 +1,12 @@
+apiVersion: storage.openloft.cn/v1
+kind: ClusterDomain
+metadata:
+  labels:
+    app.kubernetes.io/name: clusterdomain
+    app.kubernetes.io/instance: clusterdomain-sample
+    app.kubernetes.io/part-of: openloft
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/created-by: openloft
+  name: clusterdomain-sample
+spec:
+  domain: "openloft.cn"

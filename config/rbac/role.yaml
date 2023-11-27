@@ -95,6 +95,32 @@ rules:
 - apiGroups:
   - storage.openloft.cn
   resources:
+  - clusterdomains
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - storage.openloft.cn
+  resources:
+  - clusterdomains/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - storage.openloft.cn
+  resources:
+  - clusterdomains/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - storage.openloft.cn
+  resources:
   - virtualclusters
   verbs:
   - create

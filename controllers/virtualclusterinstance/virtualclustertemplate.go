@@ -36,6 +36,8 @@ func (r *Reconciler) getVirtualClusterSpec(
 			return nil, err
 		}
 
+		clusterDomain := r.getClusterDomain(ctx)
+
 		// https://www.vcluster.com/docs/using-vclusters/access#via-ingress
 		pathType := networkingv1.PathTypeImplementationSpecific
 
@@ -52,8 +54,9 @@ func (r *Reconciler) getVirtualClusterSpec(
 		vcSpec.Ingress.Annotations = annotations
 		vcSpec.Ingress.TLS = []networkingv1.IngressTLS{}
 
-		// XXX: HOST
-		vcSpec.Ingress.Host = vci.Name
+		if clusterDomain != nil && clusterDomain.Spec.Domain != "" {
+			vcSpec.Ingress.Host = fmt.Sprintf("%s.%s", normalizedName(vci), clusterDomain.Spec.Domain)
+		}
 		if vcSpec.Ingress.Host == "" {
 			host, err := r.discoverHostFromService(ctx, vci)
 			if err != nil {

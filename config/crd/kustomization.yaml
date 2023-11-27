@@ -4,4 +4,5 @@
 resources:
 - bases/storage.loft.sh_virtualclusterinstances.yaml
 - bases/storage.loft.sh_virtualclustertemplates.yaml
+- bases/storage.openloft.cn_clusterdomains.yaml
 #+kubebuilder:scaffold:crdkustomizeresource

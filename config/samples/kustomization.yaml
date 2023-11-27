@@ -4,4 +4,5 @@ resources:
 - default/storage_v1_virtualclusterinstance.yaml
 - isolated/storage_v1_virtualclustertemplate.yaml
 - isolated/storage_v1_virtualclusterinstance.yaml
+- storage_v1_clusterdomain.yaml
 #+kubebuilder:scaffold:manifestskustomizesamples

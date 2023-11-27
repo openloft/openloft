@@ -33,6 +33,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 
 	openloftv1 "github.com/openloft/openloft/api/v1"
+	"github.com/openloft/openloft/controllers/clusterdomain"
 	"github.com/openloft/openloft/controllers/virtualclusterinstance"
 	"github.com/openloft/openloft/controllers/virtualclustertemplate"
 	//+kubebuilder:scaffold:imports
@@ -108,6 +109,15 @@ func main() {
 		Recorder: mgr.GetEventRecorderFor("virtualclustertemplate-controller"),
 	}).SetupWithManager(mgr); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "VirtualClusterTemplate")
+		os.Exit(1)
+	}
+	if err = (&clusterdomain.ClusterDomainReconciler{
+		Client:   mgr.GetClient(),
+		Scheme:   mgr.GetScheme(),
+		Log:      ctrlLog.WithName("ClusterDomain"),
+		Recorder: mgr.GetEventRecorderFor("clusterdomain-controller"),
+	}).SetupWithManager(mgr); err != nil {
+		setupLog.Error(err, "unable to create controller", "controller", "ClusterDomain")
 		os.Exit(1)
 	}
 	//+kubebuilder:scaffold:builder

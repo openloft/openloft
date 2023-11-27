@@ -31,7 +31,13 @@
 kubectl apply -f https://raw.githubusercontent.com/openloft/openloft/main/deploy/manifests.yaml
 ```
 
-### 3. Create a vCluster Template
+### 3. Create a Cluster Domain
+
+```bash
+kubectl apply -f https://raw.githubusercontent.com/openloft/openloft/main/config/samples/storage_v1_clusterdomain.yaml
+```
+
+### 4. Create a vCluster Template
 
 There are two types of vCluster templates in sample, `isolated` and `default`. The `isolated` template will create a vCluster with a [resource quota](https://kubernetes.io/docs/concepts/policy/resource-quotas/). The `default` template will create a vCluster with no resource quota.
 
@@ -41,20 +47,20 @@ The below command will create a `isolated` vCluster template.
 kubectl apply -f https://raw.githubusercontent.com/openloft/openloft/main/config/samples/isolated/storage_v1_virtualclustertemplate.yaml
 ```
 
-### 4. Create a vCluster Instance
+### 5. Create a vCluster Instance
 
 ```bash
 kubectl apply -f https://raw.githubusercontent.com/openloft/openloft/main/config/samples/isolated/storage_v1_virtualclusterinstance.yaml
 ```
 
-By running the above command, a vCluster called `isolated-sample-openloft-cn` would be created in the namespace `vc-isolated-sample-openloft-cn`. And an ingress would be created with the name `ingress-isolated-sample-openloft-cn`.
+By running the above command, a vCluster called `isolated-sample` would be created in the namespace `vc-isolated-sample`.
 
-### 5. Retrieving the kube config from the vCluster secret
+### 6. Retrieving the kube config from the vCluster secret
 
-The secret is prefixed with `vc-` and ends with the vCluster name, so a vCluster instance called `isolated-sample.openloft.cn` would create a secret called `vc-isolated-sample-openloft-cn` in the namespace `vc-isolated-sample-openloft-cn`. You can retrieve the kube config after the vCluster has started via:
+The secret is prefixed with `vc-` and ends with the vCluster name, so a vCluster instance called `isolated-sample` would create a secret called `vc-isolated-sample` in the namespace `vc-isolated-sample`. You can retrieve the kube config after the vCluster has started via:
 
 ```
-kubectl get secret vc-isolated-sample-openloft-cn -n vc-isolated-sample-openloft-cn --template={{.data.config}} | base64 -D > kubeconfig.yaml
+kubectl get secret vc-isolated-sample -n vc-isolated-sample --template={{.data.config}} | base64 -D > kubeconfig.yaml
 ```
 
 The secret will hold a kube config in this format:
@@ -89,7 +95,7 @@ e.g. `/etc/hosts` on macOS/Linux:
 127.0.0.1 isolated-sample.openloft.cn
 ```
 
-### 6. Accessing the vCluster
+### 7. Accessing the vCluster
 
 You can access the vCluster via:
 

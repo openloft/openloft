@@ -100,7 +100,7 @@ help: ## Display this help.
 manifests: SED_SEARCH_STRING := scope: Namespaced
 manifests: SED_REPLACE_STRING := scope: Cluster
 manifests: controller-gen ## Generate WebhookConfiguration, ClusterRole and CustomResourceDefinition objects.
-	$(CONTROLLER_GEN) rbac:roleName=manager-role crd webhook paths="./vendor/github.com/loft-sh/api/v3/pkg/apis/storage/v1/;./controllers/..." output:crd:artifacts:config=config/crd/bases
+	$(CONTROLLER_GEN) rbac:roleName=manager-role crd webhook paths="./vendor/github.com/loft-sh/api/v3/pkg/apis/storage/v1/;./api/v1/;./controllers/..." output:crd:artifacts:config=config/crd/bases
 	grep -l -RE "$(SED_SEARCH_STRING)" config/crd/bases \
 		| xargs $(SED) -i -E 's#$(SED_SEARCH_STRING)$$#$(SED_REPLACE_STRING)#g'
 

@@ -21,4 +21,12 @@ resources:
   group: storage
   kind: VirtualClusterTemplate
   version: v1
+- api:
+    crdVersion: v1
+  controller: true
+  domain: openloft.cn
+  group: storage
+  kind: ClusterDomain
+  path: github.com/openloft/openloft/api/v1
+  version: v1
 version: "3"
