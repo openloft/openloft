@@ -4,6 +4,7 @@ ifeq ($(shell uname),Darwin)
 else
 	SED := sed
 endif
+HELM ?= helm
 
 # VERSION defines the project version for the bundle.
 # Update this value when you upgrade the version of your project.
@@ -182,6 +183,11 @@ deploy-dry-run: manifests kustomize ## Dry run deploy (generate YAML file instea
 	cd config/manager && $(KUSTOMIZE) edit set image controller=${IMG}
 	$(KUSTOMIZE) build config/default --output deploy/manifests.yaml
 
+.PHONY: helm
+helm: deploy-dry-run kustohelmize
+	$(KUSTOHELMIZE) create --from=deploy/manifests.yaml deploy/chart/openloft
+	$(HELM) lint deploy/chart/openloft
+
 .PHONY: undeploy
 undeploy: ## Undeploy controller from the K8s cluster specified in ~/.kube/config. Call with ignore-not-found=true to ignore resource not found errors during deletion.
 	$(KUSTOMIZE) build config/default | kubectl delete --ignore-not-found=$(ignore-not-found) -f -
@@ -197,6 +203,8 @@ $(LOCALBIN):
 KUSTOMIZE ?= $(LOCALBIN)/kustomize
 CONTROLLER_GEN ?= $(LOCALBIN)/controller-gen
 ENVTEST ?= $(LOCALBIN)/setup-envtest
+KUBERNETES-SPLIT-YAML ?= $(LOCALBIN)/kubernetes-split-yaml
+KUSTOHELMIZE ?= $(LOCALBIN)/kustohelmize
 
 ## Tool Versions
 KUSTOMIZE_VERSION ?= v3.8.7
@@ -222,6 +230,16 @@ $(CONTROLLER_GEN): $(LOCALBIN)
 envtest: $(ENVTEST) ## Download envtest-setup locally if necessary.
 $(ENVTEST): $(LOCALBIN)
 	test -s $(LOCALBIN)/setup-envtest || GOBIN=$(LOCALBIN) go install sigs.k8s.io/controller-runtime/tools/setup-envtest@latest
+
+.PHONY: kubernetes-split-yaml
+kubernetes-split-yaml: $(KUBERNETES-SPLIT-YAML) ## Download kubernetes-split-yaml locally if necessary.
+$(KUBERNETES-SPLIT-YAML): $(LOCALBIN)
+	test -s $(LOCALBIN)/kubernetes-split-yaml || GOBIN=$(LOCALBIN) go install github.com/yeahdongcn/kubernetes-split-yaml@latest
+
+.PHONY: kustohelmize
+kustohelmize: $(KUSTOHELMIZE) ## Download kustohelmize locally if necessary.
+$(KUSTOHELMIZE): $(LOCALBIN)
+	test -s $(LOCALBIN)/kustohelmize || GOBIN=$(LOCALBIN) go install github.com/yeahdongcn/kustohelmize@latest
 
 .PHONY: operator-sdk
 OPERATOR_SDK ?= $(LOCALBIN)/operator-sdk
