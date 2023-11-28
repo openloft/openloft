@@ -32,6 +32,8 @@ type ClusterDomainStatus struct {
 //+kubebuilder:object:root=true
 //+kubebuilder:subresource:status
 //+kubebuilder:resource:scope=Cluster
+//+kubebuilder:printcolumn:name="Age",type="date",JSONPath=".metadata.creationTimestamp"
+//+kubebuilder:printcolumn:name="Domain",type=string,JSONPath=`.spec.domain`
 
 // ClusterDomain is the Schema for the clusterdomains API
 type ClusterDomain struct {

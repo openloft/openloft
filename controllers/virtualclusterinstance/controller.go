@@ -75,7 +75,7 @@ func normalizedNamespace(vci *loftv1.VirtualClusterInstance) string {
 //+kubebuilder:rbac:groups=networking.k8s.io,resources=ingressclasses,verbs=get;list;watch
 //+kubebuilder:rbac:groups=core,resources=events,verbs=create;patch
 
-func (r *Reconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
+func (r *Reconciler) Reconcile(ctx context.Context, req ctrl.Request) (_ ctrl.Result, reterr error) {
 	r.Log.Info("Reconciling VirtualClusterInstance", "req.NamespacedName", req.NamespacedName)
 
 	vci := &loftv1.VirtualClusterInstance{}
@@ -108,7 +108,54 @@ func (r *Reconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Resu
 		return result, err
 	}
 
+	defer func() {
+		// Always reconcile the Status.Phase field.
+		r.reconcilePhase(ctx, req)
+	}()
+
 	return ctrl.Result{}, nil
+}
+
+func (r *Reconciler) reconcilePhase(ctx context.Context, req ctrl.Request) {
+	vci := &loftv1.VirtualClusterInstance{}
+	err := r.Get(ctx, req.NamespacedName, vci)
+	if err != nil {
+		r.Log.Error(err, "Failed to get VirtualClusterInstance")
+		return
+	}
+
+	vc := &openloftv1.VirtualCluster{}
+	err = r.Get(ctx, types.NamespacedName{Name: normalizedName(vci), Namespace: normalizedNamespace(vci)}, vc)
+	if err != nil {
+		r.Log.Error(err, "Failed to get VirtualCluster")
+		return
+	}
+
+	if vci.Status.Phase != loftv1.InstancePending {
+		vci.Status.Phase = loftv1.InstancePending
+	}
+
+	// set failed if a condition is errored
+	vci.Status.Reason = ""
+	vci.Status.Message = ""
+
+	for _, c := range vc.Status.Conditions {
+		if c.Status == corev1.ConditionTrue && c.Type == openloftv1.DeployedCondition {
+			vci.Status.Phase = loftv1.InstanceReady
+			break
+		}
+		if c.Status == corev1.ConditionFalse && c.Severity == openloftv1.ConditionSeverityError {
+			vci.Status.Phase = loftv1.InstanceFailed
+			vci.Status.Reason = c.Reason
+			vci.Status.Message = c.Message
+			break
+		}
+	}
+
+	r.Log.Info("Updating VirtualClusterInstance status", "VirtualClusterInstance.Name", vci.Name)
+	if err := r.Update(ctx, vci); err != nil {
+		r.Log.Error(err, "Failed to update VirtualClusterInstance status")
+	}
 }
 
 // SetupWithManager sets up the controller with the Manager.

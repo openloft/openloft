@@ -35,6 +35,9 @@ type VirtualClusterSpec struct {
 
 // VirtualClusterStatus defines the observed state of VirtualCluster
 type VirtualClusterStatus struct {
+	// Conditions holds several conditions the vcluster might be in
+	// +optional
+	Conditions Conditions `json:"conditions,omitempty"`
 }
 
 //+kubebuilder:object:root=true

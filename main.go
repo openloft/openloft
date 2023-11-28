@@ -111,7 +111,7 @@ func main() {
 		setupLog.Error(err, "unable to create controller", "controller", "VirtualClusterTemplate")
 		os.Exit(1)
 	}
-	if err = (&clusterdomain.ClusterDomainReconciler{
+	if err = (&clusterdomain.Reconciler{
 		Client:   mgr.GetClient(),
 		Scheme:   mgr.GetScheme(),
 		Log:      ctrlLog.WithName("ClusterDomain"),

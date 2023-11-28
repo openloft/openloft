@@ -28,8 +28,8 @@ import (
 	openloftv1 "github.com/openloft/openloft/api/v1"
 )
 
-// ClusterDomainReconciler reconciles a ClusterDomain object
-type ClusterDomainReconciler struct {
+// Reconciler reconciles a ClusterDomain object
+type Reconciler struct {
 	client.Client
 	Scheme   *runtime.Scheme
 	Log      logr.Logger
@@ -40,14 +40,14 @@ type ClusterDomainReconciler struct {
 //+kubebuilder:rbac:groups=storage.openloft.cn,resources=clusterdomains/status,verbs=get;update;patch
 //+kubebuilder:rbac:groups=storage.openloft.cn,resources=clusterdomains/finalizers,verbs=update
 
-func (r *ClusterDomainReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
+func (r *Reconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 	r.Log.Info("Reconciling VirtualClusterTemplateReconciler", "req.NamespacedName", req.NamespacedName)
 
 	return ctrl.Result{}, nil
 }
 
 // SetupWithManager sets up the controller with the Manager.
-func (r *ClusterDomainReconciler) SetupWithManager(mgr ctrl.Manager) error {
+func (r *Reconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&openloftv1.ClusterDomain{}).
 		Complete(r)
