@@ -50,6 +50,9 @@ spec:
           ingresses:
             enabled: true
 
+        vcluster:
+          image: rancher/k3s:v1.26.9-k3s1
+
         coredns:
           enabled: true
 

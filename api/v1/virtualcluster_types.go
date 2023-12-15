@@ -31,6 +31,7 @@ type VirtualClusterSpec struct {
 	Syncer      *Syncer           `json:"syncer,omitempty"`
 	Service     *Service          `json:"service,omitempty"`
 	Ingress     *Ingress          `json:"ingress,omitempty"`
+	VCluster    *VCluster         `json:"vcluster,omitempty"`
 }
 
 // VirtualClusterStatus defines the observed state of VirtualCluster

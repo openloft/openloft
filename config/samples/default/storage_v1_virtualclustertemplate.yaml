@@ -24,6 +24,9 @@ spec:
           ingresses:
             enabled: true
 
+        vcluster:
+          image: rancher/k3s:v1.28.2-k3s1
+
         coredns:
           enabled: true
 
