@@ -1,5 +1,7 @@
 package v1
 
+import corev1 "k8s.io/api/core/v1"
+
 /* Copied from https://github.com/loft-sh/vcluster/blob/main/charts/k3s/values.yaml#L273
 
 # Service configurations
@@ -25,4 +27,12 @@ service:
 */
 
 type Service struct {
+	//+kubebuilder:validation:Enum=ClusterIP;NodePort;LoadBalancer;ExternalName
+	Type        corev1.ServiceType `json:"type,omitempty"`
+	ExternalIPs []string           `json:"externalIPs,omitempty"`
+	//+kubebuilder:validation:Enum=Local;Cluster
+	ExternalTrafficPolicy    corev1.ServiceExternalTrafficPolicy `json:"externalTrafficPolicy,omitempty"`
+	LoadBalancerIP           string                              `json:"loadBalancerIP,omitempty"`
+	LoadBalancerSourceRanges []string                            `json:"loadBalancerSourceRanges,omitempty"`
+	LoadBalancerClass        *string                             `json:"loadBalancerClass,omitempty"`
 }

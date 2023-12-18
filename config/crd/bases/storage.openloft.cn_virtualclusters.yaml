@@ -1051,6 +1051,37 @@ spec:
                     type: object
                 type: object
               service:
+                properties:
+                  externalIPs:
+                    items:
+                      type: string
+                    type: array
+                  externalTrafficPolicy:
+                    description: ServiceExternalTrafficPolicy describes how nodes
+                      distribute service traffic they receive on one of the Service's
+                      "externally-facing" addresses (NodePorts, ExternalIPs, and LoadBalancer
+                      IPs.
+                    enum:
+                    - Local
+                    - Cluster
+                    type: string
+                  loadBalancerClass:
+                    type: string
+                  loadBalancerIP:
+                    type: string
+                  loadBalancerSourceRanges:
+                    items:
+                      type: string
+                    type: array
+                  type:
+                    description: Service Type string describes ingress methods for
+                      a service
+                    enum:
+                    - ClusterIP
+                    - NodePort
+                    - LoadBalancer
+                    - ExternalName
+                    type: string
                 type: object
               sync:
                 description: Sync defines the configuration for sync
