@@ -1,0 +1,13 @@
+apiVersion: helm.cattle.io/v1
+kind: HelmChartConfig
+metadata:
+  name: harbor
+  namespace: kube-system
+spec:
+  valuesContent: |-
+    externalURL:
+      https://harbor.openloft.cn
+    expose:
+      ingress:
+        hosts:
+          core: harbor.openloft.cn
