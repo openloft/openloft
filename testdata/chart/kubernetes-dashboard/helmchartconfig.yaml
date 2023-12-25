@@ -1,0 +1,17 @@
+apiVersion: helm.cattle.io/v1
+kind: HelmChartConfig
+metadata:
+  name: kubernetes-dashboard
+  namespace: kube-system
+spec:
+  valuesContent: |-
+    ingress:
+      enabled: true
+      hosts:
+      - kubernetes.dashboard.openloft.cn
+    extraArgs:
+      - --enable-skip-login
+      - --enable-insecure-login
+      - --system-banner="Welcome to vCluster"
+    rbac:
+      clusterReadOnlyRole: true
