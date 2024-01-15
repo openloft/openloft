@@ -19,6 +19,7 @@ spec:
         # Below you can configure the virtual cluster
         isolation:
           enabled: true
+          podSecurityStandard: privileged
           resourceQuota:
             enabled: true
             quota:
