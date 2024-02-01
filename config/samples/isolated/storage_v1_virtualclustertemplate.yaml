@@ -28,6 +28,12 @@ spec:
               requests.storage: "100Gi"
               requests.ephemeral-storage: 60Gi
               requests.nvidia.com/gpu: 16
+              requests.devices.kubevirt.io/kvm: 10
+              requests.devices.kubevirt.io/tun: 10
+              requests.devices.kubevirt.io/vhost-net: 10
+              limits.devices.kubevirt.io/kvm: 10
+              limits.devices.kubevirt.io/tun: 10
+              limits.devices.kubevirt.io/vhost-net: 10
               limits.nvidia.com/gpu: 16
               limits.cpu: 20
               limits.memory: 40Gi
